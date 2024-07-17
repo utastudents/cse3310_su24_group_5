@@ -4,7 +4,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 
-public class webserver_socket extends WebSoketServer {
+public class webserver_socket extends WebSocketServer {
     public static final int SERVER_PORT=8080;
 
     public static void main(String[] args) {
