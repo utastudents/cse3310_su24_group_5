@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+<h1>WebSocket Client</h1>
+<div>
+    <label for="message">Message: </label>
+    <input type="text" id="message" placeholder="Enter your message">
+    <button onclick="sendMessage()">Send</button>
+</div>
+<div id="output"></div>
+
+<script>
+    // Create a WebSocket connection to the server
+    const socket = new WebSocket('ws://localhost:8080');
+
+    // Function to send a message to the server
+    function sendMessage() {
+        const message = document.getElementById('message').value;
+        socket.send(message);
+        document.getElementById('output').innerHTML += `<p>Sent: ${message}</p>`;
+    }
+
+    // Event listener for when the connection is opened
+    socket.addEventListener('open', function (event) {
+        console.log('WebSocket connection opened');
+        document.getElementById('output').innerHTML += `<p>WebSocket connection opened</p>`;
+    });
+
+    // Event listener for when a message is received from the server
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data);
+        document.getElementById('output').innerHTML += `<p>Received: ${event.data}</p>`;
+    });
+
+    // Event listener for when the connection is closed
+    socket.addEventListener('close', function (event) {
+        console.log('WebSocket connection closed');
+        document.getElementById('output').innerHTML += `<p>WebSocket connection closed</p>`;
+    });
+
+    // Event listener for when an error occurs
+    socket.addEventListener('error', function (event) {
+        console.error('WebSocket error: ', event);
+        document.getElementById('output').innerHTML += `<p>WebSocket error</p>`;
+    });
+</script>
+</body>
+</html>
