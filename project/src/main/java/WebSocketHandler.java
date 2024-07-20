@@ -5,8 +5,7 @@ import java.util.Queue;
 
 public class WebSocketHandler {
     private List<WebSocket> webSockets;
-    private int port;
-    private connection conn;
+
 
     public void onOpen() {
         // Implementation here
