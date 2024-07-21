@@ -3,6 +3,12 @@ public class Timer {
     private long endTime;
     private boolean running;
 
+    public Timer() {
+        this.startTime = 0;
+        this.endTime = 0;
+        this.running = false;
+    }
+
     public void startTimer() {
         this.startTime = System.currentTimeMillis();
         this.running = true;
