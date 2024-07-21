@@ -1,16 +1,31 @@
 public class Timer {
-    private long time;
+    private long startTime;
+    private long endTime;
+    private boolean running;
+
+    public Timer() {
+        this.startTime = 0;
+        this.endTime = 0;
+        this.running = false;
+    }
 
     public void startTimer() {
-        // Implementation here
+        this.startTime = System.currentTimeMillis();
+        this.running = true;
     }
 
     public void stopTimer() {
-        // Implementation here
+        this.endTime = System.currentTimeMillis();
+        this.running = false;
     }
 
     public long getElapsedTime() {
-        // Implementation here
-        return 0;
+        long elapsedTime;
+        if (running) {
+            elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
+        } else {
+            elapsedTime = ((endTime - startTime) / 1000);
+        }
+        return elapsed;
     }
 }
