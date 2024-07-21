@@ -6,21 +6,63 @@ public class Round {
     private List<Stake> stakes = new ArrayList<>();
     private int turns ;
 
-    public void startRound() {
-        // Implementation here
+
+    public Round() {
+        this.turns = 0;
     }
 
+    public void startRound() {
+        turns = 0;
+        words.clear(); // Clear previous words
+        stakes.clear(); // Clear previous stakes
+        // Add logic to populate words and stakes if necessary
+        System.out.println("Round started.");
+    }
+
+
     public void endRound() {
-        // Implementation here
+ 
+        System.out.println("Round ended.");
     }
 
     public int selectWords() {
-        // Implementation here
-        return 0;
+        
+        if (!words.isEmpty()) {
+            Word selectedWord = words.get(0); // Replace with actual selection logic
+            System.out.println("Selected word: " + selectedWord.getValue());
+            return words.indexOf(selectedWord);
+        }
+        return -1; // Indicate no word selected
     }
 
     public int selectStake() {
-        // Implementation here
-        return 0;
+        // Implementation to select a stake
+        if (!stakes.isEmpty()) {
+            Stake selectedStake = stakes.get(0); // Replace with actual selection logic
+            System.out.println("Selected stake: " + selectedStake.getValue());
+            return stakes.indexOf(selectedStake);
+        }
+        return -1; // Indicate no stake selected
+    }
+     // Additional methods to add words and stakes for testing
+     public void addWord(Word word) {
+        words.add(word);
+    }
+
+    public void addStake(Stake stake) {
+        stakes.add(stake);
+    }
+
+    // Getters and setters for testing purposes
+    public List<Word> getWords() {
+        return words;
+    }
+
+    public List<Stake> getStakes() {
+        return stakes;
+    }
+
+    public int getTurns() {
+        return turns;
     }
 }
