@@ -2,66 +2,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private Player[] players = new Player[4];
-    private List<Round> rounds = new ArrayList<>();
+    private Player[] players;
+    private List<Round> rounds;
     private Round currentRound;
+    private int currentPlayerIndex;
+    private boolean isGameActive;
+
+    public Game(int numberOfPlayers) {
+        players = new Player[numberOfPlayers];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            players[i] = new Player("Player " + (i + 1));
+        }
+        rounds = new ArrayList<>();
+        currentPlayerIndex = 0;
+        isGameActive = false;
+    }
 
     public void startGame() {
-        currentRound = new Round();
-        currentRound.startRound();
+        System.out.println("Game started!");
+        isGameActive = true;
+        startNewRound();
+    }
+
+    private void startNewRound() {
+        currentRound = new Round(players);
         rounds.add(currentRound);
-        // Initialize players and other game-specific variables
-        System.out.println("Game started.");
+        currentRound.startRound();
+    }
+
+    public void endRound() {
+        System.out.println("Round ended!");
+        if (rounds.size() < 3) {
+            startNewRound();
+        } else {
+            endGame();
+        }
     }
 
     public void endGame() {
-        if (currentRound != null) {
-            currentRound.endRound();
-        }
-        System.out.println("Game ended.");
-        // Additional logic to finalize the game
-        // This could include saving game state, calculating final scores, etc.
-        calculateWinner();
+        System.out.println("Game ended!");
+        int winnerIndex = calculateWinner();
+        System.out.println("The winner is " + players[winnerIndex].getName());
+        isGameActive = false;
     }
 
     public int calculateWinner() {
-        // Implementation to calculate the winner
-        // Placeholder logic for winner calculation
-        // Assuming the player with the highest score wins
+        int maxScore = -1;
         int winnerIndex = -1;
-        int highestScore = -1;
-
         for (int i = 0; i < players.length; i++) {
-            if (players[i] != null && players[i].getScore() > highestScore) {
-                highestScore = players[i].getScore();
+            if (players[i].getScore() > maxScore) {
+                maxScore = players[i].getScore();
                 winnerIndex = i;
             }
         }
-
-        System.out.println("Winner is player at index: " + winnerIndex);
         return winnerIndex;
     }
 
-    // Additional methods for testing and game management
-    public void addPlayer(Player player, int index) {
-        if (index >= 0 && index < players.length) {
-            players[index] = player;
-        }
+    public Player getCurrentPlayer() {
+        return players[currentPlayerIndex];
     }
 
-    public Player getPlayer(int index) {
-        if (index >= 0 && index < players.length) {
-            return players[index];
-        }
-        return null;
+    public void nextPlayer() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    }
+
+    public boolean isGameActive() {
+        return isGameActive;
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 
     public Round getCurrentRound() {
         return currentRound;
     }
-
-    public List<Round> getRounds() {
-        return rounds;
-    }
 }
-
