@@ -6,62 +6,55 @@ import java.util.List;
 import java.util.Random;
 
 public class WordList {
+    
+    private String filePath;
+    private Random random;
 
-    public static void main(String[] args) 
-    {
-        Random random = new Random();   //for nextInt
-        int randomNumber = random.nextInt(3) + 1;  //getting random number btw 1 and 3
-        ArrayList<String> randomwords = new ArrayList<>();  //array to store our random words
-        System.out.println("I am selecting " + randomNumber + " words");  //temporary, how many words we will be selecting
-        
-        for( int i = 0; i < randomNumber; i++)  //for loop to store x number of words
-        {
-            String w = readRandomWordFromFile("words.txt"); //calling function
-            randomwords.add(w); //adding words to arraylist
-        }
-
-        for (String word : randomwords)    //for each loop
-        {
-            System.out.println("word selected " + word);  //printing out the words we have stored
-
-        }
+    public WordList(String filePath) {
+        this.filePath = filePath;
+        this.random = new Random();
     }
 
-    public static String readRandomWordFromFile(String filePath) 
-    {
-        ArrayList<String> words = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) 
-        {
+    public List<String> getRandomWords(int numWords) {
+        List<String> randomWords = new ArrayList<>();
+        for (int i = 0; i < numWords; i++) {
+            String word = readRandomWordFromFile();
+            if (word != null) {
+                randomWords.add(word);
+            }
+        }
+        return randomWords;
+    }
+
+    private String readRandomWordFromFile() {
+        List<String> words = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String word;
-            while ((word = br.readLine()) != null) 
-            {
-                words.add(word); 
+            while ((word = br.readLine()) != null) {
+                words.add(word);
             }
-        } 
-        catch (IOException e) 
-        {
-
-        }        
-        return isValidWord(words);
+        } catch (IOException e) {
+            System.err.println("Error reading the file: " + filePath);
+            e.printStackTrace();
+            return null;
+        }
+        return getRandomValidWord(words);
     }
 
-
-    public static String isValidWord(ArrayList<String> words)
-    {
-        String validword = "";
-        while(validword == "")
-        {
-            Random rand = new Random();
-            int randomIndex = rand.nextInt(words.size());
-            String testword = words.get(randomIndex);
-            String rule = "^[a-z]+$";
-            if(testword.matches(rule) && testword.length() >= 3 && testword.length() <= 12)
-            {
-                    validword = testword;                             
+    private String getRandomValidWord(List<String> words) {
+        List<String> validWords = new ArrayList<>();
+        String rule = "^[a-z]+$";
+        for (String word : words) {
+            if (word.matches(rule) && word.length() >= 3 && word.length() <= 12) {
+                validWords.add(word);
             }
         }
-        return validword;
+
+        if (validWords.isEmpty()) {
+            return null;
+        }
+
+        int randomIndex = random.nextInt(validWords.size());
+        return validWords.get(randomIndex);
     }
 }
-
-    
