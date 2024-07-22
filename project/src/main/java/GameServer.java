@@ -132,5 +132,12 @@ public class GameServer extends WebSocketServer {
     public static void main(String[] args) {
        GameServer server = new GameServer(8080);
         server.startServer();
+        WordList wordList = new WordList("C:\\Users\\kha\\Desktop\\project\\src\\main\\resources\\words.txt");
+        List<String> randomWords = wordList.getRandomWords(3);
+        for (String word : randomWords) {
+            System.out.println("Word selected: " + word);
+        }
+        
+
     }
 }
