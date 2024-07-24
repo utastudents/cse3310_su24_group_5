@@ -1,60 +1,40 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
+package uta.cse3310;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class WordList {
-    
-    private String filePath;
-    private Random random;
 
-    public WordList(String filePath) {
-        this.filePath = filePath;
-        this.random = new Random();
+    private List<String> words;
+
+    public WordList(String filePath) throws IOException {
+        loadWords(filePath);
     }
 
-    public List<String> getRandomWords(int numWords) {
-        List<String> randomWords = new ArrayList<>();
-        for (int i = 0; i < numWords; i++) {
-            String word = readRandomWordFromFile();
-            if (word != null) {
-                randomWords.add(word);
-            }
-        }
-        return randomWords;
+    private void loadWords(String filePath) throws IOException {
+        words = Files.readAllLines(Paths.get(filePath));
     }
 
-    private String readRandomWordFromFile() {
-        List<String> words = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String word;
-            while ((word = br.readLine()) != null) {
-                words.add(word);
-            }
+    public String getRandomWord() {
+        Random rand = new Random();
+        return words.get(rand.nextInt(words.size()));
+    }
+
+    public List<String> getWords() {
+        return new ArrayList<>(words);
+    }
+
+    public static void main(String[] args) {
+        try {
+            WordList wordList = new WordList("path/to/words.txt");
+            System.out.println("Random word: " + wordList.getRandomWord());
         } catch (IOException e) {
-            System.err.println("Error reading the file: " + filePath);
-            e.printStackTrace();
-            return null;
+            System.err.println("Error loading words: " + e.getMessage());
         }
-        return getRandomValidWord(words);
-    }
-
-    private String getRandomValidWord(List<String> words) {
-        List<String> validWords = new ArrayList<>();
-        String rule = "^[a-z]+$";
-        for (String word : words) {
-            if (word.matches(rule) && word.length() >= 3 && word.length() <= 12) {
-                validWords.add(word);
-            }
-        }
-
-        if (validWords.isEmpty()) {
-            return null;
-        }
-
-        int randomIndex = random.nextInt(validWords.size());
-        return validWords.get(randomIndex);
     }
 }
+

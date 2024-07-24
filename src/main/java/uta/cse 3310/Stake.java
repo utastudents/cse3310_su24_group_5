@@ -1,34 +1,30 @@
+package uta.cse3310;
+
 public class Stake {
-    private int value;
-    private String type;
+    private String currentStake;
 
-    public Stake(int value, String type) {
-        this.value = value;
-        this.type = type;
+    // Default constructor
+    public Stake() {
     }
 
-    public int applyStake() {
-        // Implementation of applying the stake logic
-        // This could be a placeholder logic for now
-        System.out.println("Applying stake of value: " + value + " and type: " + type);
-        return value;
+    // Constructor that accepts a string argument
+    public Stake(String currentStake) {
+        this.currentStake = currentStake;
     }
 
-    // Getters and setters for value and type for testing
-    public int getValue() {
-        return value;
+    public String getCurrentStake() {
+        return currentStake;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setCurrentStake(String currentStake) {
+        this.currentStake = currentStake;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void reset() {
+        this.currentStake = null;  // Or any default value
     }
 }
+
+
+
 

@@ -1,66 +1,77 @@
-import java.util.ArrayList;
+package uta.cse3310;
+
+import java.io.IOException;
 import java.util.List;
 
 public class Round {
-    private List<Word> words = new ArrayList<>();
-    private List<Stake> stakes = new ArrayList<>();
-    private int turns;
+    private Word word;
+    private Stake stake;
+    private int currentPlayerIndex;
+    private List<Player> players;
+    private boolean isRoundActive;
 
-    public Round() {
-        this.turns = 0;
+    public Round(List<Player> players, String wordFilePath, String stakeFilePath) throws IOException {
+        this.players = players;
+        this.word = new Word(loadWords(wordFilePath));
+        this.stake = new Stake(stakeFilePath);
+        this.currentPlayerIndex = 0;
+        this.isRoundActive = true;
+    }
+
+    private String[] loadWords(String filePath) throws IOException {
+        List<String> lines = java.nio.file.Files.readAllLines(java.nio.file.Paths.get(filePath));
+        return lines.toArray(new String[0]);
     }
 
     public void startRound() {
-        turns = 0;
-        words.clear(); // Clear previous words
-        stakes.clear(); // Clear previous stakes
-        // Add logic to populate words and stakes if necessary
-        System.out.println("Round started.");
+        System.out.println("New round started. Word to guess: " + word.getWordProgress());
     }
 
-    public void endRound() {
-        System.out.println("Round ended.");
-    }
-
-    public int selectWord() {
-        if (!words.isEmpty()) {
-            Word selectedWord = words.get(0); // Replace with actual selection logic
-            System.out.println("Selected word: " + selectedWord.getValue());
-            return words.indexOf(selectedWord);
+    public void nextTurn() {
+        if (!isRoundActive) {
+            System.out.println("Round is not active.");
+            return;
         }
-        return -1; // Indicate no word selected
-    }
 
-    public int selectStake() {
-        if (!stakes.isEmpty()) {
-            Stake selectedStake = stakes.get(0); // Replace with actual selection logic
-            System.out.println("Selected stake: " + selectedStake.getValue());
-            return stakes.indexOf(selectedStake);
+        Player currentPlayer = players.get(currentPlayerIndex);
+        System.out.println("Current player: " + currentPlayer.getName());
+        
+        char guessedLetter = 'a'; // Replace with actual guess from player input
+        boolean isCorrect = word.guessLetter(guessedLetter);
+        if (isCorrect) {
+            System.out.println("Correct guess!");
+        } else {
+            System.out.println("Incorrect guess.");
         }
-        return -1; // Indicate no stake selected
-    }
-       
-
-    // for testing
-    public void addWord(Word word) {
-        words.add(word);
-    }
-
-    public void addStake(Stake stake) {
-        stakes.add(stake);
+        
+        if (word.isFullyGuessed()) {
+            System.out.println("Word guessed correctly! Round over.");
+            isRoundActive = false;
+        } else {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
     }
 
-    public List<Word> getWords() {
-        return words;
+    public String getCurrentWordProgress() {
+        return word.getWordProgress();
     }
 
-    public List<Stake> getStakes() {
-        return stakes;
+   /*  public String getCurrentStake() {
+        return stake.getCurrentStake();
+    }*/
+
+    public void resetRound() throws IOException {
+        this.word.reset();
+       // this.stake.reset();
+        this.currentPlayerIndex = 0;
+        this.isRoundActive = true;
     }
 
-    public int getTurns() {
-        return turns;
+    public boolean isRoundActive() {
+        return isRoundActive;
     }
 }
+
+
 
 

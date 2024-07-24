@@ -1,88 +1,121 @@
+package uta.cse3310;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.java_websocket.WebSocket;
 
 public class Game {
-    private Player[] players;
+
+    private List<Player> players;
     private List<Round> rounds;
-    private Round currentRound;
-    private int currentPlayerIndex;
+    private int currentRoundIndex;
     private boolean isGameActive;
+    private Statistics stats;
+    private int gameId;
 
-    public Game(int numberOfPlayers) {
-        players = new Player[numberOfPlayers];
-        for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new Player("Player " + (i + 1));
-        }
-        rounds = new ArrayList<>();
-        currentPlayerIndex = 0;
-        isGameActive = false;
-    }
+    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats) throws IOException {
+        this.players = players;
+        this.rounds = new ArrayList<>();
+        this.currentRoundIndex = 0;
+        this.isGameActive = true;
+        this.stats = stats;
+        this.gameId = 0;
+        stats = new Statistics();
 
-    public void startGame() {
-        System.out.println("Game started!");
-        isGameActive = true;
-        startNewRound();
-    }
-
-    private void startNewRound() {
-        currentRound = new Round(players);
-        rounds.add(currentRound);
-        currentRound.startRound();
-    }
-
-    public void endRound() {
-        System.out.println("Round ended!");
-        if (rounds.size() < 3) {
-            startNewRound();
-        } else {
-            endGame();
+        // Initialize rounds
+        for (int i = 0; i < 3; i++) { // Assuming a game consists of 3 rounds
+            rounds.add(new Round(players, wordFilePath, stakeFilePath));
         }
     }
 
-    public void endGame() {
-        System.out.println("Game ended!");
-        int winnerIndex = calculateWinner();
-        System.out.println("The winner is " + players[winnerIndex].getName());
-        isGameActive = false;
-    }
-
-    public int calculateWinner() {
-        int maxScore = -1;
-        int winnerIndex = -1;
-        for (int i = 0; i < players.length; i++) {
-            if (players[i].getScore() > maxScore) {
-                maxScore = players[i].getScore();
-                winnerIndex = i;
-            }
-        }
-        return winnerIndex;
-    }
-
-    public Player getCurrentPlayer() {
-        return players[currentPlayerIndex];
-    }
-
-    public void nextPlayer() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    }
-
-    public boolean isGameActive() {
-        return isGameActive;
-    }
-
-    public Player[] getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-    public Round getCurrentRound() {
-        return currentRound;
+    public void setGameId(int gameId) {
+        this.gameId = gameId;
     }
 
-    // Added method to handle stakes
-    public void applyStake(int stakeIndex) {
-        Stake selectedStake = currentRound.getStakes().get(stakeIndex); // Added line
-        int stakeValue = selectedStake.applyStake(); // Added line
-        System.out.println("Applied stake of value: " + stakeValue); // Added line
+    public void removePlayer(WebSocket conn) {
+        players.removeIf(player -> player.getId().equals(conn.getAttachment()));
+    }
+
+    public void update(UserEvent event) {
+        // Implementation of update method
+    }
+
+    public void startGame() {
+        System.out.println("Game started with " + players.size() + " players.");
+        startNextRound();
+    }
+
+    public void startNextRound() {
+        if (currentRoundIndex >= rounds.size()) {
+            System.out.println("All rounds completed.");
+            isGameActive = false;
+            determineWinner();
+            return;
+        }
+
+        Round currentRound = rounds.get(currentRoundIndex);
+        currentRound.startRound();
+        currentRoundIndex++;
+    }
+
+    public void playRound() {
+        if (!isGameActive) {
+            System.out.println("Game is not active.");
+            return;
+        }
+
+        Round currentRound = rounds.get(currentRoundIndex - 1); // -1 because we incremented in startNextRound
+        while (currentRound.isRoundActive()) {
+            currentRound.nextTurn();
+        }
+
+        // After the round ends, start the next round
+        startNextRound();
+    }
+    public void endGame(Player player) {
+        stats.updateWinner(player);
+    }
+
+    public Statistics getStatistics() {
+        return stats;
+    }
+
+    private void determineWinner() {
+        Player winner = null;
+        int highestScore = 0;
+        for (Player player : players) {
+            if (player.getScore() > highestScore) {
+                highestScore = player.getScore();
+                winner = player;
+            }
+        }
+
+        if (winner != null) {
+            System.out.println("The winner is " + winner.getName() + " with a score of " + highestScore);
+            stats.updateWinner(winner);
+        } else {
+            System.out.println("No winner determined.");
+        }
+    }
+
+    public void resetGame() {
+        currentRoundIndex = 0;
+        isGameActive = true;
+        for (Round round : rounds) {
+            try {
+                round.resetRound();
+            } catch (IOException e) {
+                System.err.println("Error resetting round: " + e.getMessage());
+            }
+        }
     }
 }
+
+
+
 
