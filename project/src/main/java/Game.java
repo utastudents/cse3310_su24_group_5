@@ -77,4 +77,12 @@ public class Game {
     public Round getCurrentRound() {
         return currentRound;
     }
+
+    // Added method to handle stakes
+    public void applyStake(int stakeIndex) {
+        Stake selectedStake = currentRound.getStakes().get(stakeIndex); // Added line
+        int stakeValue = selectedStake.applyStake(); // Added line
+        System.out.println("Applied stake of value: " + stakeValue); // Added line
+    }
 }
+

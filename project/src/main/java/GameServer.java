@@ -2,6 +2,9 @@ import java.net.InetSocketAddress;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+
+import uta.cse3310.HttpServer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,11 +70,13 @@ public class GameServer extends WebSocketServer {
 
         Game game = games.get(0); // Assuming only one game for simplicity
         Player currentPlayer = game.getCurrentPlayer();
+        Round currentRound = game.getCurrentRound();
 
         switch (action) {
             case "solve":
                 boolean correct = currentPlayer.solvePuzzle(payload, game.getCurrentRound());
                 if (correct) {
+                    currentRound.endRound();
                     game.endRound();
                     broadcast("solve:correct:" + currentPlayer.getName());
                 } else {
@@ -89,6 +94,12 @@ public class GameServer extends WebSocketServer {
                 currentPlayer.selectConsonant(payload.charAt(0), game.getCurrentRound());
                 game.nextPlayer();
                 broadcast("consonant:" + currentPlayer.getName() + ":" + payload);
+                break;
+            case "stake":
+                int stakeIndex = Integer.parseInt(payload);
+                Stake selectedStake = currentRound.getStakes().get(stakeIndex); 
+                int stakeValue = selectedStake.applyStake(); 
+                broadcast("stake:applied:" + stakeValue); 
                 break;
             default:
                 System.out.println("Unknown action: " + action);
@@ -126,18 +137,38 @@ public class GameServer extends WebSocketServer {
             state.append(word.getRevealedWord()).append(" ");
         }
 
+        for (Stake stake : currentRound.getStakes()) {
+            state.append(stake.getValue()).append(" ");
+        }
+
         broadcast(state.toString().trim());
     }
 
     public static void main(String[] args) {
-       GameServer server = new GameServer(8080);
-        server.startServer();
-        WordList wordList = new WordList("C:\\Users\\kha\\Desktop\\project\\src\\main\\resources\\words.txt");
-        List<String> randomWords = wordList.getRandomWords(3);
-        for (String word : randomWords) {
-            System.out.println("Word selected: " + word);
-        }
-        
+        // Set default ports
+        int httpPort = 9005;
+        int webSocketPort = 9105;
 
+        // Read ports from environment variables if available
+        String httpPortEnv = System.getenv("HTTP_PORT");
+        String webSocketPortEnv = System.getenv("WEBSOCKET_PORT");
+
+        if (httpPortEnv != null) {
+            httpPort = Integer.parseInt(httpPortEnv);
+        }
+        if (webSocketPortEnv != null) {
+            webSocketPort = Integer.parseInt(webSocketPortEnv);
+        }
+
+        // Start the WebSocket server
+        GameServer gameServer = new GameServer(webSocketPort);
+        gameServer.startServer();
+
+        // Start the HTTP server
+        HttpServer httpServer = new HttpServer(httpPort, "./src/main/resources/html");
+        httpServer.start();
+
+        // Load words from the file
+        WordList wordList = new WordList("src/main/resources/words.txt");
     }
 }

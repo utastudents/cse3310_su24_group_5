@@ -14,7 +14,7 @@ public class Stake {
         return value;
     }
 
-    // Getters and setters for value and type
+    // Getters and setters for value and type for testing
     public int getValue() {
         return value;
     }

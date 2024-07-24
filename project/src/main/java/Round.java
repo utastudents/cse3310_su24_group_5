@@ -4,8 +4,7 @@ import java.util.List;
 public class Round {
     private List<Word> words = new ArrayList<>();
     private List<Stake> stakes = new ArrayList<>();
-    private int turns ;
-
+    private int turns;
 
     public Round() {
         this.turns = 0;
@@ -19,14 +18,11 @@ public class Round {
         System.out.println("Round started.");
     }
 
-
     public void endRound() {
- 
         System.out.println("Round ended.");
     }
 
-    public int selectWords() {
-        
+    public int selectWord() {
         if (!words.isEmpty()) {
             Word selectedWord = words.get(0); // Replace with actual selection logic
             System.out.println("Selected word: " + selectedWord.getValue());
@@ -36,7 +32,6 @@ public class Round {
     }
 
     public int selectStake() {
-        // Implementation to select a stake
         if (!stakes.isEmpty()) {
             Stake selectedStake = stakes.get(0); // Replace with actual selection logic
             System.out.println("Selected stake: " + selectedStake.getValue());
@@ -44,8 +39,10 @@ public class Round {
         }
         return -1; // Indicate no stake selected
     }
-     // Additional methods to add words and stakes for testing
-     public void addWord(Word word) {
+       
+
+    // for testing
+    public void addWord(Word word) {
         words.add(word);
     }
 
@@ -53,7 +50,6 @@ public class Round {
         stakes.add(stake);
     }
 
-    // Getters and setters for testing purposes
     public List<Word> getWords() {
         return words;
     }
@@ -66,3 +62,5 @@ public class Round {
         return turns;
     }
 }
+
+
