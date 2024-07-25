@@ -12,6 +12,14 @@ public class UserEvent {
         this.id = id;
     }
 
+    public PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
     }
@@ -36,4 +44,5 @@ public class UserEvent {
         return value;
     }
 }
+
 

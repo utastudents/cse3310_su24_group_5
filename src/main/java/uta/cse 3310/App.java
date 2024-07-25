@@ -94,7 +94,7 @@ public class App extends WebSocketServer {
         System.out.println("< " + message);
         Gson gson = new GsonBuilder().create();
         UserEvent event = gson.fromJson(message, UserEvent.class);
-
+    
         Game game = conn.getAttachment();
         if (game != null) {
             game.update(event);
@@ -103,6 +103,7 @@ public class App extends WebSocketServer {
             broadcast(jsonString);
         }
     }
+    
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
@@ -123,14 +124,14 @@ public class App extends WebSocketServer {
 
     public static void main(String[] args) {
         String httpPortEnv = System.getenv("HTTP_PORT");
-        int httpPort = (httpPortEnv != null) ? Integer.parseInt(httpPortEnv) : 8080;
+        int httpPort = (httpPortEnv != null) ? Integer.parseInt(httpPortEnv) : 9005;
 
         HttpServer httpServer = new HttpServer(httpPort, "./html");
         httpServer.start();
         System.out.println("HTTP server started on port: " + httpPort);
 
         String wsPortEnv = System.getenv("WEBSOCKET_PORT");
-        int wsPort = (wsPortEnv != null) ? Integer.parseInt(wsPortEnv) : 8081;
+        int wsPort = (wsPortEnv != null) ? Integer.parseInt(wsPortEnv) : 9105;
 
         App webSocketServer = new App(wsPort);
         webSocketServer.setReuseAddr(true);

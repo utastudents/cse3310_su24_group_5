@@ -42,8 +42,16 @@ public class Game {
     }
 
     public void update(UserEvent event) {
-        // Implementation of update method
+        switch (event.type) {
+            case "PLAY":
+                playRound();
+                break;
+            // Add cases for other event types as needed
+            default:
+                System.out.println("Unknown event type: " + event.type);
+        }
     }
+    
 
     public void startGame() {
         System.out.println("Game started with " + players.size() + " players.");
