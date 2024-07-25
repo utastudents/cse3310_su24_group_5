@@ -54,7 +54,7 @@ public class App extends WebSocketServer {
         if (game == null) {
             List<Player> players = new ArrayList<>(); // Add logic to initialize players
             try {
-                game = new Game(players, "path/to/words.txt", "path/to/stakes.txt", new Statistics());
+                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics());
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
