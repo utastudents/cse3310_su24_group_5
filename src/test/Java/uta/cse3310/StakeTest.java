@@ -2,27 +2,46 @@ package uta.cse3310;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StakeTest {
+
     private Stake stake;
 
     @BeforeEach
     public void setUp() {
-        stake = new Stake("initial stakes");
+        stake = new Stake();
     }
 
     @Test
-    public void testGetStakes() {
-        assertEquals("initial stakes", stake.getStakes());
+    public void testDefaultConstructor() {
+        assertNull(stake.getCurrentStake());
     }
 
     @Test
-    public void testSetStakes() {
-        stake.setStakes("new stakes");
-        assertEquals("new stakes", stake.getStakes());
+    public void testConstructorWithArgument() {
+        Stake stakeWithArgument = new Stake("High");
+        assertEquals("High", stakeWithArgument.getCurrentStake());
+    }
+
+    @Test
+    public void testGetAndSetCurrentStake() {
+        stake.setCurrentStake("Low");
+        assertEquals("Low", stake.getCurrentStake());
+
+        stake.setCurrentStake("Medium");
+        assertEquals("Medium", stake.getCurrentStake());
+    }
+
+    @Test
+    public void testReset() {
+        stake.setCurrentStake("High");
+        stake.reset();
+        assertNull(stake.getCurrentStake());
     }
 }
+
 
 
 

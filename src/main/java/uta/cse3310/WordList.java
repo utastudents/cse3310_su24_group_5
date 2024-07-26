@@ -30,7 +30,7 @@ public class WordList {
 
     public static void main(String[] args) {
         try {
-            WordList wordList = new WordList("path/to/words.txt");
+            WordList wordList = new WordList("src/main/resources/words.txt");
             System.out.println("Random word: " + wordList.getRandomWord());
         } catch (IOException e) {
             System.err.println("Error loading words: " + e.getMessage());

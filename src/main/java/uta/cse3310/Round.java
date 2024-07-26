@@ -25,6 +25,7 @@ public class Round {
 
     public void startRound() {
         System.out.println("New round started. Word to guess: " + word.getWordProgress());
+        this.isRoundActive = true;
     }
 
     public void nextTurn() {
@@ -36,7 +37,8 @@ public class Round {
         Player currentPlayer = players.get(currentPlayerIndex);
         System.out.println("Current player: " + currentPlayer.getName());
         
-        char guessedLetter = 'a'; // Replace with actual guess from player input
+        // Simulate a guess with random letter, replace with actual user input logic
+        char guessedLetter = getRandomLetter();
         boolean isCorrect = word.guessLetter(guessedLetter);
         if (isCorrect) {
             System.out.println("Correct guess!");
@@ -52,17 +54,22 @@ public class Round {
         }
     }
 
+    private char getRandomLetter() {
+        return (char) ('a' + new java.util.Random().nextInt(26));
+    }
+
     public String getCurrentWordProgress() {
         return word.getWordProgress();
     }
 
-   /*  public String getCurrentStake() {
-        return stake.getCurrentStake();
-    }*/
+    // Commented out as it does not exist
+    // public String getCurrentStake() {
+    //     return stake.getCurrentStake();
+    // }
 
     public void resetRound() throws IOException {
         this.word.reset();
-       // this.stake.reset();
+        // this.stake.reset();
         this.currentPlayerIndex = 0;
         this.isRoundActive = true;
     }
@@ -71,6 +78,7 @@ public class Round {
         return isRoundActive;
     }
 }
+
 
 
 

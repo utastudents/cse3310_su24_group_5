@@ -4,13 +4,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class GameTimer {
-
-    private Timer timer;
+    private transient Timer timer; 
+  //  private Timer timer;
     private long startTime;
     private long elapsedTime;
     private boolean isRunning;
 
     public GameTimer() {
+        
         this.timer = new Timer();
         this.elapsedTime = 0;
         this.isRunning = false;

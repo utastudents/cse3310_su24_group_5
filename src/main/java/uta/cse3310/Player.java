@@ -6,15 +6,17 @@ public class Player {
     private String id;
     private String name;
     private int score;
-    private boolean winner;
+    private boolean iswinner;
     private GameTimer timer; // Updated reference
 
+    
+
     public boolean isWinner() {
-        return winner;
+        return iswinner;
     }
 
-    public void setWinner(boolean winner) {
-        this.winner = winner;
+    public void setWinner(boolean iswinner) {
+        this.iswinner = iswinner;
     }
 
     public Player(String name) {

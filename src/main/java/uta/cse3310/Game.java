@@ -42,16 +42,15 @@ public class Game {
     }
 
     public void update(UserEvent event) {
-        switch (event.type) {
+        switch (event.getAction()) {
             case "PLAY":
                 playRound();
                 break;
-            // Add cases for other event types as needed
+            // Add cases for other actions as needed
             default:
-                System.out.println("Unknown event type: " + event.type);
+                System.out.println("Unknown action: " + event.getAction());
         }
     }
-    
 
     public void startGame() {
         System.out.println("Game started with " + players.size() + " players.");
@@ -76,23 +75,30 @@ public class Game {
             System.out.println("Game is not active.");
             return;
         }
-
+    
         Round currentRound = rounds.get(currentRoundIndex - 1); // -1 because we incremented in startNextRound
         while (currentRound.isRoundActive()) {
             currentRound.nextTurn();
         }
-
-        // After the round ends, start the next round
-        startNextRound();
+    
+        if (!currentRound.isRoundActive()) {
+            startNextRound();
+            if (currentRoundIndex >= rounds.size()) {
+                System.out.println("All rounds completed.");
+                isGameActive = false;
+                determineWinner();
+            }
+        }
     }
+
     public void endGame(Player player) {
+        stats.incrementGamesPlayed();
         stats.updateWinner(player);
     }
 
     public Statistics getStatistics() {
         return stats;
     }
-
     private void determineWinner() {
         Player winner = null;
         int highestScore = 0;
@@ -102,8 +108,9 @@ public class Game {
                 winner = player;
             }
         }
-
+    
         if (winner != null) {
+            winner.setWinner(true);  // Ensure that the winner is marked correctly
             System.out.println("The winner is " + winner.getName() + " with a score of " + highestScore);
             stats.updateWinner(winner);
         } else {
@@ -122,7 +129,13 @@ public class Game {
             }
         }
     }
+
+    public boolean isGameActive() {
+        return isGameActive;
+    }
 }
+
+
 
 
 

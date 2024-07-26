@@ -35,47 +35,48 @@ public class App extends WebSocketServer {
         super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
     }
 
-    @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        connectionId++;
-        System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
+   @Override
+public void onOpen(WebSocket conn, ClientHandshake handshake) {
+    connectionId++;
+    System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 
-        ServerEvent event = new ServerEvent();
-        Game game = null;
+    ServerEvent event = new ServerEvent();
+    Game game = null;
 
-        for (Game g : activeGames) {
-            if (g.getPlayers().size() < 4) {  // Assuming a maximum of 4 players per game
-                game = g;
-                System.out.println("found a match");
-                break;
-            }
+    for (Game g : activeGames) {
+        if (g.getPlayers().size() < 4) {  // Assuming a maximum of 4 players per game
+            game = g;
+            System.out.println("found a match");
+            break;
         }
-
-        if (game == null) {
-            List<Player> players = new ArrayList<>(); // Add logic to initialize players
-            try {
-                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-            game.setGameId(gameId++);
-            activeGames.add(game);
-            System.out.println("creating a new Game");
-        } else {
-            System.out.println("joining an existing game");
-        }
-
-        conn.setAttachment(game);
-        Gson gson = new Gson();
-        String jsonString = gson.toJson(event);
-        conn.send(jsonString);
-        System.out.println("> " + jsonString);
-
-        jsonString = gson.toJson(game);
-        System.out.println("< " + jsonString);
-        broadcast(jsonString);
     }
+
+    if (game == null) {
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("Player1"));  // Initialize at least one player
+        try {
+            game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        game.setGameId(gameId++);
+        activeGames.add(game);
+        System.out.println("creating a new Game");
+    } else {
+        System.out.println("joining an existing game");
+    }
+
+    conn.setAttachment(game);  // This line ensures that the game is attached to the connection
+    Gson gson = new Gson();
+    String jsonString = gson.toJson(event);
+    conn.send(jsonString);
+    System.out.println("> " + jsonString);
+
+    jsonString = gson.toJson(game);
+    System.out.println("< " + jsonString);
+    broadcast(jsonString);
+}
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
@@ -94,7 +95,7 @@ public class App extends WebSocketServer {
         System.out.println("< " + message);
         Gson gson = new GsonBuilder().create();
         UserEvent event = gson.fromJson(message, UserEvent.class);
-    
+
         Game game = conn.getAttachment();
         if (game != null) {
             game.update(event);
@@ -103,7 +104,6 @@ public class App extends WebSocketServer {
             broadcast(jsonString);
         }
     }
-    
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
