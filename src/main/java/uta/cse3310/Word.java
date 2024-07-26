@@ -1,5 +1,6 @@
-package uta.cse3310;
+//--------------------------for checking if match and revealing word------------------------------------
 
+package uta.cse3310;
 import java.util.Random;
 
 public class Word {
