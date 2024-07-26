@@ -80,9 +80,10 @@ public class Game {
         while (currentRound.isRoundActive()) {
             currentRound.nextTurn();
         }
+        startNextRound();
     
         if (!currentRound.isRoundActive()) {
-            startNextRound();
+            //startNextRound();
             if (currentRoundIndex >= rounds.size()) {
                 System.out.println("All rounds completed.");
                 isGameActive = false;

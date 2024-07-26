@@ -33,8 +33,8 @@ public class AppTest {
 
         app.onOpen(conn, handshake);
 
-        // Verify that the connection attachment is not null
-        assertNotNull(conn.getAttachment(), "Attachment should not be null after onOpen");
+        verify(conn, times(1)).send(anyString());
+       // assertNotNull(conn.getAttachment(), "Attachment should not be null after onOpen");
     }
 
     @Test
