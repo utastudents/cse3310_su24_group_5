@@ -7,6 +7,8 @@ import org.java_websocket.WebSocket;
 
 public class Game {
 
+    private static final int MAX_PLAYERS = 4;
+
     private List<Player> players;
     private List<Round> rounds;
     private int currentRoundIndex;
@@ -37,6 +39,16 @@ public class Game {
         this.gameId = gameId;
     }
 
+    public boolean addPlayer(Player player) {
+        if (players.size() < MAX_PLAYERS) {
+            players.add(player);
+            return true; // Player added successfully
+        } else {
+            System.out.println("Cannot add player: maximum number of players reached.");
+            return false; // Player not added
+        }
+    }
+
     public void removePlayer(WebSocket conn) {
         players.removeIf(player -> player.getId().equals(conn.getAttachment()));
     }
@@ -53,9 +65,16 @@ public class Game {
     }
 
     public void startGame() {
+        if (players.size() < 2) {
+            System.out.println("Cannot start game: not enough players.");
+            isGameActive = false;
+            return;
+        }
         System.out.println("Game started with " + players.size() + " players.");
+        isGameActive = true;
         startNextRound();
     }
+
 
     public void startNextRound() {
         if (currentRoundIndex >= rounds.size()) {

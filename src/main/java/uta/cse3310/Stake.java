@@ -23,6 +23,11 @@ public class Stake {
     public void reset() {
         this.currentStake = null;  // Or any default value
     }
+
+    public int calculatePoints(char guessedLetter) {
+        // Example calculation logic needs to be replaced with actual game logic
+        return 10;
+    }
 }
 
 
