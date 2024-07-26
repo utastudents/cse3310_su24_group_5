@@ -16,24 +16,9 @@ import java.util.Scanner;
 Do "Word words = new Word();"
 And "ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());" in main function to fill arr
 And "words.checksolutionandreveal(wordsforgame);" to call this file 
- 
-
 */
+
 public class Word {
-
-
-    public static HashSet<Character> findletters(ArrayList<String> wordsforgame) {
-        
-        HashSet<Character> letters = new HashSet<>();
-
-        for (String word : wordsforgame) {
-            for (int i = 0; i < word.length(); i++) {
-                char letter = word.charAt(i);
-                letters.add(letter);
-            }
-        }
-        return letters;
-    }
 
 
     public static int iscorrect(char letter, HashSet<Character> lettersinword)
@@ -53,39 +38,30 @@ public class Word {
 
 
 
-    public static void checksolutionandreveal(ArrayList<String> wordsforgame) 
+    public static void checksolutionandreveal(ArrayList<String> wordsforgame, char letter, HashSet<Character> lettersinword, HashSet<Character> lettersguessed, HashSet<Character> correctguesses) 
     {
 
-        //WordList wordlist = new WordList();//needs access to the other file
-        //wordlist.gatherwords();//gathering the words
-        //ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());//storing the words in a new array list 
-        //----------------got this in main------------------------
-        
-        //for (String word : wordsforgame)    //printing out the words for verification
-        //{
-        //    System.out.println("word(s) selected: " + word); 
-        //}
+        lettersguessed.add(letter);
 
 
 
-
-        //needs access to words
-        System.out.print("letters to guess: ");
-        HashSet<Character> lettersinword = findletters(wordsforgame);
-        for (char letter : lettersinword) 
+        int i = iscorrect(letter, lettersinword );    
+        if(i == 1)
         {
-            System.out.print(letter);
+            correctguesses.add(letter);
+            System.out.println("correct");
+            //revealletter(letter );
+            //            
+            //need correctly guessed letters
+            //the index of each letter
+            //the orrigiall letters
         }
-
-
-        StringBuilder newstring = new StringBuilder();
-        for (String word : wordsforgame) 
+        if(correctguesses.equals(lettersinword))
         {
-            newstring.append(word);
+            i = 0;
+            System.out.println("you guessed all the letters!"); 
+            winner(wordsforgame);              
         }
-        System.out.println("\nnew string:" + newstring);
-
-
 
 
 /*-------------------
@@ -112,51 +88,8 @@ public class Word {
         //System.out.println(letteridx.());
         System.out.println("\n----------done printing hasmap---------");
 
-*/
-
-
-
-        Scanner scanner = new Scanner(System.in);        
-        HashSet<Character> lettersguessed = new HashSet<>();
-        HashSet<Character> correctguesses = new HashSet<>();
-        System.err.println();
+*/      
         
-        int i = 1;
-
-        while( i == 1)
-        {
-            //board();
-            //pass correctly guessed letters array
-            //pass the hashmap
-            //the orrigial words array
-
-            System.out.print("Enter a letter: ");
-            String guess = scanner.next();
-            char letter = guess.charAt(0);
-            lettersguessed.add(letter);
-
-            i = iscorrect(letter, lettersinword );
-            
-            if(i == 1)
-            {
-                correctguesses.add(letter);
-                //revealletter(letter );
-                //            
-                //need correctly guessed letters
-                //the index of each letter
-                //the orrigiall letters
-            }
-            
-
-            if(correctguesses.equals(lettersinword))
-            {
-                i = 0;
-                System.out.println("you guessed all the letters!"); 
-                winner(wordsforgame);              
-            }
-            
-        }
-        scanner.close();
     }
 
 /* 
@@ -179,6 +112,8 @@ public class Word {
         System.out.print(" ");
     }
 */
+
+    //good
     public static void winner(ArrayList<String> wordsforgame)
     {
         System.out.print("\nWinner the word(s) were:");
@@ -188,6 +123,35 @@ public class Word {
         }
     }
 }
+      
+        
+    //--------------------add ons--------------------------
+    //check (if) that letter has already been guessed
+    //if it has been guessed already game over(break), or give error message and another chance
+    //(if) not a duplicate check (if) any letter in the letterarraylist matches that letter
+    //if match (go) to correct, pass arrays
+    //set has guess = 1, and update the arrays
+    //(else) not match/ set has guess = 0 
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
