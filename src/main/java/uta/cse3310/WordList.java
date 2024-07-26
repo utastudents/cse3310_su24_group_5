@@ -5,21 +5,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileReader;
-
+//-----------important------------
 //do "WordList wordlist = new WordList();" access to Wordlist file
 //then "wordlist.gatherwords();" to gather words
 
-    
+//needs "HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);" in main function
+
+
 public class WordList {
-    
+
     ArrayList<String> randomwords = new ArrayList<>();  
-    
-    
-    
+
+
+
     public void printwords() 
     {       
         for (String word : randomwords)
@@ -27,24 +30,24 @@ public class WordList {
             System.out.println("word selected " + word); 
         }
     }    
-    
-    
-    
+
+
+
     public void gatherwords() //1
     {       
         Random random = new Random();   
         int randomNumber = random.nextInt(3) + 1;
         System.out.println("I am selecting " + randomNumber + " words");  
-          
+        
         for( int i = 0; i < randomNumber; i++) 
         {
-            String w = readWordsFromFile("src/main/resources/words.txt");//2
+            String w = readWordsFromFile("words.txt");//2
             randomwords.add(w);
         }
     }
-        
     
-    
+
+
     public static String readWordsFromFile(String filePath)//2
     {
         ArrayList<String> words = new ArrayList<>();
@@ -62,9 +65,9 @@ public class WordList {
         }        
         return isValidWord(words); //3
     }
-    
-    
-    
+
+
+
     public static String isValidWord(ArrayList<String> words)//3
     {
         String validword = "";
@@ -76,17 +79,33 @@ public class WordList {
             String rule = "^[a-z]+$";
             if(testword.matches(rule) && testword.length() >= 3 && testword.length() <= 12)
             {
-                validword = testword;                             
+                    validword = testword;                             
             }
         }
         return validword;
     }
-    
-    
-    
+
+
+
     public ArrayList<String> getArrList() 
     {
         return randomwords;
     }
+
+
+
+    public static HashSet<Character> findletters(ArrayList<String> wordsforgame) {
+        
+        HashSet<Character> letters = new HashSet<>();
+
+        for (String word : wordsforgame) {
+            for (int i = 0; i < word.length(); i++) {
+                char letter = word.charAt(i);
+                letters.add(letter);
+            }
+        }
+        return letters;
+    }
+
 }
 
