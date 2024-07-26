@@ -18,9 +18,8 @@ And "ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());" i
 And "words.checksolutionandreveal(wordsforgame);" to call this file 
 */
 
-public class Word {
-
-
+public class Word 
+{
     public static int iscorrect(char letter, HashSet<Character> lettersinword)
     {
         int i;
@@ -43,18 +42,15 @@ public class Word {
 
         lettersguessed.add(letter);
 
-
-
         int i = iscorrect(letter, lettersinword );    
         if(i == 1)
         {
             correctguesses.add(letter);
             System.out.println("correct");
-            //revealletter(letter );
-            //            
-            //need correctly guessed letters
-            //the index of each letter
-            //the orrigiall letters
+        }
+        else
+        {
+            System.out.println("Incorrect!!!");
         }
         if(correctguesses.equals(lettersinword))
         {
@@ -62,56 +58,28 @@ public class Word {
             System.out.println("you guessed all the letters!"); 
             winner(wordsforgame);              
         }
+        getWordProgress(wordsforgame, correctguesses);
+    }
 
 
-/*-------------------
-        Map<Character, List<Integer>> letteridx = new HashMap<>(); //good
-
-        for (int i = 0; i < newstring.length(); i++) { //must
-            char ch = newstring.charAt(i);
-            if (!letteridx.containsKey(ch)) {
-                letteridx.put(ch, new ArrayList<>());
-            }
-            letteridx.get(ch).add(i);
-        }
-        //print it put to verify(temporary)
-        System.out.println("\n----------printing hasmap--------------");
-        //for (Map.Entry<Character, List<Integer>> entry : letteridx.entrySet()) {
-        //    System.out.print(entry.getKey());
-        for( int i = 0; i < letteridx.size(); i++)
-        {
-            System.out.println(letteridx.get(i));
-        }
-        //cannont access a specific index in a hashmap
-        //}
-        System.out.println(letteridx.values());
-        //System.out.println(letteridx.());
-        System.out.println("\n----------done printing hasmap---------");
-
-*/      
+    public static void getWordProgress(ArrayList<String> wordsforgame, HashSet<Character> correctguesses) 
+    {
+        String result = String.join(" ", wordsforgame);
         
+        for(int i = 0; i < result.length(); i++)
+        {        
+            if(correctguesses.contains(result.charAt(i)))
+            {
+            System.out.print(result.charAt(i));
+            }
+            else
+            {
+                System.out.print("_");
+            }
+        }
+
     }
 
-/* 
-    public static void revealletter(char letter)
-    {
-        //show the current board + any new letters
-    }
-
-    public static void board()
-    {
-        //show the current letters in the board
-
-        //need to be able to do this multiple times and at diffrent indexs
-        //do for entire array
-        if( != )
-        System.out.print(" ");
-        if(==)
-        System.out.print(letter);
-        if(tansitioning letters)
-        System.out.print(" ");
-    }
-*/
 
     //good
     public static void winner(ArrayList<String> wordsforgame)
@@ -121,6 +89,7 @@ public class Word {
         {
             System.out.print(" " + word); 
         }
+        System.out.println();
     }
 }
       
