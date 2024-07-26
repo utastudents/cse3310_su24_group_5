@@ -10,13 +10,58 @@ import java.util.List;
 import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileReader;
-//-----------important------------
-//do "WordList wordlist = new WordList();" access to Wordlist file
-//then "wordlist.gatherwords();" to gather words
+/*------------------------------------IMPORTANT!!!!!!!!!!!!!!!--------------------------
+MAIN FUNCTION WOULD BE LIKE THIS
 
-//needs "HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);" in main function
+public class Main {
+    public static void main(String[] args) 
+    {
+        //access to Wordlist file
+        WordList wordlist = new WordList();
+        Word words = new Word();
+       
+        //gathering the words
+        wordlist.gatherwords();
+        ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());//storing the words in a new array list 
+        
+        //printing out the words for verification
+        for (String word : wordsforgame)    
+        {
+            System.out.println("word(s) selected: " + word); 
+        }        
 
 
+
+        //gathering letters
+        HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
+
+        //showing letters
+        System.out.print("letters to guess: ");
+        for (char letters : lettersinword) 
+        {
+            System.out.print(letters);
+        }
+        System.err.println();
+
+
+        //simple guessing functionality
+        HashSet<Character> lettersguessed = new HashSet<>();
+        HashSet<Character> correctguesses = new HashSet<>();
+        int i = 17;
+        Scanner scanner = new Scanner(System.in);
+        
+        while ( i > 0)
+        {
+            System.out.print("Enter a letter: ");
+            String guess = scanner.next(); 
+            char letter = guess.charAt(0);
+            words.checksolutionandreveal(wordsforgame, letter, lettersinword, lettersguessed, correctguesses);
+            i--;
+        }   
+        scanner.close();
+    }
+}
+*/
 public class WordList {
 
     ArrayList<String> randomwords = new ArrayList<>();  
