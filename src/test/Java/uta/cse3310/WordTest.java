@@ -46,6 +46,7 @@ public class WordTest {
 
     @Test
     public void testReset() {
+        
         String initialWord = word.getSelectedWord();
         word.reset();
         String newWord = word.getSelectedWord();
