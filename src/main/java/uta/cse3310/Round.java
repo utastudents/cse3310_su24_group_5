@@ -4,6 +4,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+/* 
+//MAIN FUNCTION WOULD BE LIKE THIS
+
+public class Main {
+    public static void main(String[] args) 
+    {
+        //access to Wordlist file
+        WordList wordlist = new WordList();
+        Word words = new Word();
+       
+        //gathering the words
+        wordlist.gatherwords();
+        ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());//storing the words in a new array list 
+        
+        //printing out the words for verification
+        for (String word : wordsforgame)    
+        {
+            System.out.println("word(s) selected: " + word); 
+        }        
+
+
+
+        //gathering letters
+        HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
+
+        //showing letters
+        System.out.print("letters to guess: ");
+        for (char letters : lettersinword) 
+        {
+            System.out.print(letters);
+        }
+        System.err.println();
+
+
+        //simple guessing functionality
+        HashSet<Character> lettersguessed = new HashSet<>();
+        HashSet<Character> correctguesses = new HashSet<>();
+        int i = 17;
+        Scanner scanner = new Scanner(System.in);
+        
+        while ( i > 0)
+        {
+            System.out.print("Enter a letter: ");
+            String guess = scanner.next(); 
+            char letter = guess.charAt(0);
+            words.checksolutionandreveal(wordsforgame, letter, lettersinword, lettersguessed, correctguesses);
+            i--;
+        }   
+        scanner.close();
+    }
+}
+*/
 
 public class Round {
     private Word word;
@@ -13,7 +65,8 @@ public class Round {
     private boolean isRoundActive;
     private static final int TURN_TIME_LIMIT = 100; // Time limit for each player's turn in seconds
     private static final int VOWEL_COST = 50; // Cost for buying a vowel
-
+    
+    
     public Round(List<Player> players, String wordFilePath, String stakeFilePath) throws IOException {
         this.players = players;
         this.word = new Word(loadWords(wordFilePath));
