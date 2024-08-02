@@ -88,7 +88,7 @@ public class WordList {
     }
 
 
-
+/* 
     public static HashSet<Character> findletters(ArrayList<String> wordsforgame) {
         
         HashSet<Character> letters = new HashSet<>();
@@ -132,5 +132,6 @@ public class WordList {
             System.err.println("Error loading words: " + e.getMessage());
         }
     }
+        */
 }
 
