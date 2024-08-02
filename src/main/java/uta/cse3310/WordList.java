@@ -88,6 +88,7 @@ public class WordList {
     }
 
 
+<<<<<<< HEAD
 /* 
     public static HashSet<Character> findletters(ArrayList<String> wordsforgame) {
         
@@ -133,5 +134,7 @@ public class WordList {
         }
     }
         */
-}
+=======
 
+>>>>>>> a8e262bb37ec3d51f4da78f835968a4bea386c99
+}
