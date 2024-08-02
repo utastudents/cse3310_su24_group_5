@@ -89,48 +89,4 @@ public class WordList {
 
 
 
-    public static HashSet<Character> findletters(ArrayList<String> wordsforgame) {
-        
-        HashSet<Character> letters = new HashSet<>();
-
-        for (String word : wordsforgame) {
-            for (int i = 0; i < word.length(); i++) {
-                char letter = word.charAt(i);
-                letters.add(letter);
-            }
-        }
-        return letters;
-    }
-
-
-
-
-    private List<String> words;
-
-    public WordList(String filePath) throws IOException 
-    {
-        loadWords(filePath);
-    }
-    private void loadWords(String filePath) throws IOException 
-    {
-        words = Files.readAllLines(Paths.get(filePath));
-    }
-    public String getRandomWord() 
-    {
-        Random rand = new Random();
-        return words.get(rand.nextInt(words.size()));
-    }
-    public static void main(String[] args) 
-    {
-        try 
-        {
-            WordList wordList = new WordList("path/to/words.txt");
-            System.out.println("Random word: " + wordList.getRandomWord());
-        } 
-        catch (IOException e) 
-        {
-            System.err.println("Error loading words: " + e.getMessage());
-        }
-    }
 }
-
