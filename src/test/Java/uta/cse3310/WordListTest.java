@@ -2,52 +2,87 @@ package uta.cse3310;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class WordListTest {
+class WordListTest {
 
     private WordList wordList;
-    private static final String TEST_FILE_PATH = "src/test/resources/test_words.txt";
+
+    @TempDir
+    Path tempDir;
 
     @BeforeEach
-    public void setUp() throws IOException {
-        // Create a temporary file with test words
-        List<String> words = List.of("apple", "banana", "cherry", "date", "elderberry");
-        Files.write(Path.of(TEST_FILE_PATH), words);
-
-        wordList = new WordList(TEST_FILE_PATH);
+    void setUp() {
+        wordList = new WordList();
     }
 
     @Test
-    public void testLoadWords() {
-        List<String> words = wordList.getWords();
+    void testGatherWords() throws IOException {
+        // Prepare a temporary file with some words
+        File tempFile = tempDir.resolve("words.txt").toFile();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            writer.write("apple\n");
+            writer.write("banana\n");
+            writer.write("cherry\n");
+            writer.write("date\n");
+            writer.write("fig\n");
+        }
+
+        // Override the file path in WordList class (assuming it's not final and can be set)
+        WordList.readWordsFromFile(tempFile.getAbsolutePath());
+
+        wordList.gatherwords();
+
+        // Check if the number of gathered words is between 1 and 3
+        assertTrue(wordList.getArrList().size() >= 1 && wordList.getArrList().size() <= 3);
+    }
+
+    @Test
+    void testReadWordsFromFile() throws IOException {
+        // Prepare a temporary file with some words
+        File tempFile = tempDir.resolve("words.txt").toFile();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            writer.write("apple\n");
+            writer.write("banana\n");
+            writer.write("cherry\n");
+        }
+
+        String word = WordList.readWordsFromFile(tempFile.getAbsolutePath());
+        assertNotNull(word);
+        assertTrue(word.matches("^[a-z]+$"));
+        assertTrue(word.length() >= 3 && word.length() <= 12);
+    }
+
+    @Test
+    void testIsValidWord() {
+        ArrayList<String> words = new ArrayList<>();
+        words.add("apple");
+        words.add("banana");
+        words.add("invalid_word_123");
+        words.add("cherry");
+
+        String validWord = WordList.isValidWord(words);
+        assertNotNull(validWord);
+        assertTrue(validWord.matches("^[a-z]+$"));
+        assertTrue(validWord.length() >= 3 && validWord.length() <= 12);
+    }
+
+    @Test
+    void testGetArrList() {
+        ArrayList<String> words = wordList.getArrList();
         assertNotNull(words);
-        assertEquals(5, words.size());
-        assertTrue(words.contains("apple"));
-        assertTrue(words.contains("banana"));
-        assertTrue(words.contains("cherry"));
-        assertTrue(words.contains("date"));
-        assertTrue(words.contains("elderberry"));
-    }
-
-    @Test
-    public void testGetRandomWord() {
-        String randomWord = wordList.getRandomWord();
-        assertNotNull(randomWord);
-        assertTrue(wordList.getWords().contains(randomWord));
-    }
-
-    @Test
-    public void testGetWords() {
-        List<String> words = wordList.getWords();
-        assertNotNull(words);
-        assertEquals(5, words.size());
+        assertTrue(words.isEmpty());
     }
 }
+
 

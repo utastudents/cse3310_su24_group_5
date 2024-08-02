@@ -138,7 +138,8 @@ public class WordList {
     }
 
 
-
+<<<<<<< HEAD
+/* 
     public static HashSet<Character> findletters(ArrayList<String> wordsforgame) {
         
         HashSet<Character> letters = new HashSet<>();
@@ -152,5 +153,42 @@ public class WordList {
         return letters;
     }
 
+<<<<<<< HEAD
 }
+=======
 
+
+
+    private List<String> words;
+
+    public WordList(String filePath) throws IOException 
+    {
+        loadWords(filePath);
+    }
+    private void loadWords(String filePath) throws IOException 
+    {
+        words = Files.readAllLines(Paths.get(filePath));
+    }
+    public String getRandomWord() 
+    {
+        Random rand = new Random();
+        return words.get(rand.nextInt(words.size()));
+    }
+    public static void main(String[] args) 
+    {
+        try 
+        {
+            WordList wordList = new WordList("path/to/words.txt");
+            System.out.println("Random word: " + wordList.getRandomWord());
+        } 
+        catch (IOException e) 
+        {
+            System.err.println("Error loading words: " + e.getMessage());
+        }
+    }
+        */
+=======
+>>>>>>> d178b52f40461c208916f73b1c733670285fa496
+
+>>>>>>> a8e262bb37ec3d51f4da78f835968a4bea386c99
+}
