@@ -67,25 +67,13 @@ public class Round {
     private boolean isRoundActive;
     private static final int TURN_TIME_LIMIT = 100; // Time limit for each player's turn in seconds
     private static final int VOWEL_COST = 50; // Cost for buying a vowel
-<<<<<<< HEAD
     WordList wordlist = new WordList();
     Word words = new Word();
     HashSet<Character> lettersguessed = new HashSet<>();
     HashSet<Character> correctguesses = new HashSet<>();
-
     //wordlist.gatherwords();
     ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());
-=======
-    
-    //what I added
-    wordlist.gatherwords();
-    WordList wordlist = new WordList();
-    Word words = new Word();
-    ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());//storing the words in a new array list 
     HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
-    HashSet<Character> lettersguessed = new HashSet<>();
-    HashSet<Character> correctguesses = new HashSet<>();
->>>>>>> d178b52f40461c208916f73b1c733670285fa496
 
     
     
@@ -93,38 +81,22 @@ public class Round {
         this.players = players;
         //this.word = new Word(loadWords(wordFilePath));
         
-<<<<<<< HEAD
-        //WordList wordlist = new WordList();
-        //Word words = new Word();
+        WordList wordlist = new WordList();
+        Word words = new Word();
         wordlist.gatherwords();
         //ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());
-        HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
+        //HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
 
-=======
-        WordList wordlist = new WordList(); //<-- calls file
-        wordlist.gatherwords();  //<-- fills words array
-        ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList()); //<-- now have an array for file
-        
->>>>>>> d178b52f40461c208916f73b1c733670285fa496
         this.stake = new Stake(stakeFilePath);
         this.currentPlayerIndex = 0;
         this.isRoundActive = true;
     }
-<<<<<<< HEAD
 /* 
-=======
-
-    /*  
->>>>>>> d178b52f40461c208916f73b1c733670285fa496
     private String[] loadWords(String filePath) throws IOException {
         List<String> lines = java.nio.file.Files.readAllLines(java.nio.file.Paths.get(filePath));
         return lines.toArray(new String[0]);
     }
-<<<<<<< HEAD
         */
-=======
-    */ 
->>>>>>> d178b52f40461c208916f73b1c733670285fa496
 
 
 //good
@@ -162,20 +134,10 @@ public class Round {
         }, TURN_TIME_LIMIT * 1000);
     }
 
-<<<<<<< HEAD
     private void presentOptions(Player currentPlayer) {
         //System.out.println("Word progress: " + word.getWordProgress());
         word.getWordProgress(wordsforgame, correctguesses);
 
-=======
-
-
-//good
-    private void presentOptions(Player currentPlayer) 
-    {
-        //word.getWordProgress(wordsforgame, correctguesses);
-        System.out.println("Word progress: " + word.getWordProgress()); //getWordProgress
->>>>>>> d178b52f40461c208916f73b1c733670285fa496
         System.out.println("Choose an option:");
         System.out.println("1. Buy a vowel");
         System.out.println("2. Select a constant");
@@ -190,11 +152,6 @@ public class Round {
         return scanner.nextInt();
     }
 
-<<<<<<< HEAD
-=======
-
-    //good
->>>>>>> d178b52f40461c208916f73b1c733670285fa496
     private void handleChoice(Player currentPlayer, int choice) {
         switch (choice) {
             case 1:
