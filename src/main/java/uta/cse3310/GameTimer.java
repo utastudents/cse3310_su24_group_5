@@ -14,12 +14,6 @@ public class GameTimer {
         this.timer = new Timer();
         this.elapsedTime = 0;
         this.isRunning = false;
-        this.timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                elapsedTime = System.currentTimeMillis() - startTime;
-            }
-        };
     }
 
     public void start() {
@@ -28,6 +22,15 @@ public class GameTimer {
         }
         this.startTime = System.currentTimeMillis();
         this.isRunning = true;
+        
+        // Create a new TimerTask instance each time the timer is started
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                elapsedTime = System.currentTimeMillis() - startTime;
+            }
+        };
+        
         timer.scheduleAtFixedRate(timerTask, 0, 1000); // Update elapsed time every second
     }
 
@@ -55,6 +58,3 @@ public class GameTimer {
         return isRunning;
     }
 }
-
-
-
