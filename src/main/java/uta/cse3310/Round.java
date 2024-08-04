@@ -15,7 +15,7 @@ public class Round {
     private static final int TURN_TIME_LIMIT = 100;
     private static final int VOWEL_COST = 50;
     private WordList wordlist = new WordList();
-    private Word words;
+    //private Word words;
     private ArrayList<String> wordsforgame;
     HashSet<Character> lettersguessed = new HashSet<>();
     HashSet<Character> correctguesses = new HashSet<>();
@@ -31,7 +31,7 @@ public class Round {
         System.out.println("words chosen" + wordsforgame);
         this.lettersinword = wordlist.findletters(wordsforgame);
         //HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
-        //this.words = new Word(wordsforgame);
+        this.word = new Word(wordsforgame);
         this.stake = new Stake(stakeFilePath);
         this.currentPlayerIndex = 0;
         this.isRoundActive = true;
@@ -205,13 +205,6 @@ public class Round {
         game.addPlayer(new Player("Player1", PlayerType.HUMAN));
         game.addPlayer(new Player("Player2", PlayerType.HUMAN));
         game.startGame();
+        System.exit(0);
     }
 }
-
-
-
-
-
-
-
-
