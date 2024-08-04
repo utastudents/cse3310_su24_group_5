@@ -1,47 +1,24 @@
 package uta.cse3310;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserEventTest {
-
-    private UserEvent userEvent;
-
-    @BeforeEach
-    public void setUp() {
-        userEvent = new UserEvent(PlayerType.HUMAN, 1);
-    }
+class UserEventTest {
 
     @Test
-    public void testSetAndGetPlayerId() {
-        userEvent.setPlayerId("player1");
-        assertEquals("player1", userEvent.getPlayerId());
-    }
+    void testUserEvent() {
+        UserEvent event = new UserEvent(PlayerType.HUMAN, 1, "PLAY", "someValue");
 
-    @Test
-    public void testSetAndGetAction() {
-        userEvent.setAction("PLAY");
-        assertEquals("PLAY", userEvent.getAction());
-    }
+        assertEquals(PlayerType.HUMAN, event.getPlayerType());
+        assertEquals(1, event.getId());
+        assertEquals("PLAY", event.getAction());
+        assertEquals("someValue", event.getValue());
 
-    @Test
-    public void testSetAndGetValue() {
-        userEvent.setValue("someValue");
-        assertEquals("someValue", userEvent.getValue());
-    }
-
-    @Test
-    public void testGetPlayerType() {
-        assertEquals(PlayerType.HUMAN, userEvent.getPlayerType());
-    }
-
-    @Test
-    public void testGetId() {
-        assertEquals(1, userEvent.getId());
+        event.setPlayerId("player123");
+        assertEquals("player123", event.getPlayerId());
     }
 }
+
 
 
 

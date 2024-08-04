@@ -1,14 +1,20 @@
 package uta.cse3310;
 
 public class ServerEvent {
-    public PlayerType YouAre;
-    public int GameId;
+    private PlayerType playerType;
+    private int gameId;
 
-    public ServerEvent() {
+    public ServerEvent(PlayerType playerType, int gameId) {
+        this.playerType = playerType;
+        this.gameId = gameId;
     }
 
-    public ServerEvent(PlayerType player, int gameId) {
-        this.YouAre = player;
-        this.GameId = gameId;
+    public PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    public int getGameId() {
+        return gameId;
     }
 }
+

@@ -5,16 +5,21 @@ import java.util.TimerTask;
 
 public class GameTimer {
     private transient Timer timer; 
-  //  private Timer timer;
     private long startTime;
     private long elapsedTime;
     private boolean isRunning;
+    private TimerTask timerTask;
 
     public GameTimer() {
-        
         this.timer = new Timer();
         this.elapsedTime = 0;
         this.isRunning = false;
+        this.timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                elapsedTime = System.currentTimeMillis() - startTime;
+            }
+        };
     }
 
     public void start() {
@@ -23,12 +28,7 @@ public class GameTimer {
         }
         this.startTime = System.currentTimeMillis();
         this.isRunning = true;
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                elapsedTime = System.currentTimeMillis() - startTime;
-            }
-        }, 0, 1000); // Update elapsed time every second
+        timer.scheduleAtFixedRate(timerTask, 0, 1000); // Update elapsed time every second
     }
 
     public void stop() {
@@ -55,5 +55,6 @@ public class GameTimer {
         return isRunning;
     }
 }
+
 
 

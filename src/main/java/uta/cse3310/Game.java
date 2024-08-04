@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.java_websocket.WebSocket;
 
+
 public class Game {
-
     private static final int MAX_PLAYERS = 4;
-
     private List<Player> players;
     private List<Round> rounds;
     private int currentRoundIndex;
@@ -21,13 +20,11 @@ public class Game {
         this.rounds = new ArrayList<>();
         this.currentRoundIndex = 0;
         this.isGameActive = true;
-        this.stats = stats;
+        this.stats = stats;  // Keep the passed stats
         this.gameId = 0;
-        stats = new Statistics();
-
-        // Initialize rounds
-        for (int i = 0; i < 3; i++) { // Assuming a game consists of 3 rounds
-            rounds.add(new Round(players, wordFilePath, stakeFilePath));
+    
+        for (int i = 0; i < 3; i++) {
+            rounds.add(new Round(players, wordFilePath, stakeFilePath));//error with this function
         }
     }
 
@@ -42,10 +39,10 @@ public class Game {
     public boolean addPlayer(Player player) {
         if (players.size() < MAX_PLAYERS) {
             players.add(player);
-            return true; // Player added successfully
+            return true;
         } else {
             System.out.println("Cannot add player: maximum number of players reached.");
-            return false; // Player not added
+            return false;
         }
     }
 
@@ -54,13 +51,23 @@ public class Game {
     }
 
     public void update(UserEvent event) {
-        switch (event.getAction()) {
+        if (event == null) {
+            System.err.println("Received null event");
+            return;
+        }
+        
+        String action = event.getAction();
+        if (action == null) {
+            System.err.println("Event action is null");
+            return;
+        }
+    
+        switch (action) {
             case "PLAY":
                 playRound();
                 break;
-            // Add cases for other actions as needed
             default:
-                System.out.println("Unknown action: " + event.getAction());
+                System.out.println("Unknown action: " + action);
         }
     }
 
@@ -72,17 +79,27 @@ public class Game {
         }
         System.out.println("Game started with " + players.size() + " players.");
         isGameActive = true;
-        startNextRound();
-    }
-
-
-    public void startNextRound() {
-        if (currentRoundIndex >= rounds.size()) {
-            System.out.println("All rounds completed.");
+        for(int i =0; i < 3; i++)
+        {
+           startNextRound(); 
+            if(i ==2)
+            {
             isGameActive = false;
             determineWinner();
-            return;
+            System.out.println("All round complete");
+
         }
+    }
+        //startNextRound();
+    }
+
+    public void startNextRound() {
+        //if (currentRoundIndex >= rounds.size()) {
+            //System.out.println("All rounds completed.");
+            //isGameActive = false;
+            //determineWinner();
+          //  return;
+        //}
 
         Round currentRound = rounds.get(currentRoundIndex);
         currentRound.startRound();
@@ -94,15 +111,14 @@ public class Game {
             System.out.println("Game is not active.");
             return;
         }
-    
-        Round currentRound = rounds.get(currentRoundIndex - 1); // -1 because we incremented in startNextRound
+
+        Round currentRound = rounds.get(currentRoundIndex - 1);
         while (currentRound.isRoundActive()) {
             currentRound.nextTurn();
         }
         startNextRound();
-    
+
         if (!currentRound.isRoundActive()) {
-            //startNextRound();
             if (currentRoundIndex >= rounds.size()) {
                 System.out.println("All rounds completed.");
                 isGameActive = false;
@@ -119,7 +135,12 @@ public class Game {
     public Statistics getStatistics() {
         return stats;
     }
-    private void determineWinner() {
+
+    public int getCurrentRoundIndex() {
+        return currentRoundIndex;
+    }
+
+    public void determineWinner() {
         Player winner = null;
         int highestScore = 0;
         for (Player player : players) {
@@ -128,9 +149,9 @@ public class Game {
                 winner = player;
             }
         }
-    
+
         if (winner != null) {
-            winner.setWinner(true);  // Ensure that the winner is marked correctly
+            winner.setWinner(true);
             System.out.println("The winner is " + winner.getName() + " with a score of " + highestScore);
             stats.updateWinner(winner);
         } else {
@@ -154,6 +175,8 @@ public class Game {
         return isGameActive;
     }
 }
+
+
 
 
 

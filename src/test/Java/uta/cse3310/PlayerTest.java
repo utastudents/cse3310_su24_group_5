@@ -5,49 +5,76 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PlayerTest {
+import java.util.List;
+
+class PlayerTest {
 
     private Player player;
 
     @BeforeEach
-    public void setUp() {
-        player = new Player("TestPlayer");
+    void setUp() {
+        player = new Player("TestPlayer", PlayerType.HUMAN);
     }
 
     @Test
-    public void testInitialConditions() {
-        assertEquals("TestPlayer", player.getName());
-        assertEquals(0, player.getScore());
-    }
-
-    @Test
-    public void testPlayerCreation() {
+    void testInitialValues() {
         assertNotNull(player.getId());
         assertEquals("TestPlayer", player.getName());
-        assertEquals(0, player.getScore());
+        assertEquals(1000, player.getScore());
         assertFalse(player.isWinner());
+        assertNotNull(player.getTimer());
+        assertTrue(player.getBoughtVowels().isEmpty());
+        assertTrue(player.getGuessedConsonants().isEmpty());
+        assertEquals(PlayerType.HUMAN, player.getPlayerType());
     }
 
     @Test
-    public void testAddScore() {
-        player.addScore(10);
-        assertEquals(10, player.getScore());
+    void testAddScore() {
+        player.addScore(100);
+        assertEquals(1100, player.getScore());
     }
 
     @Test
-    public void testResetScore() {
-        player.addScore(10);
+    void testDeductScore() {
+        player.deductScore(100);
+        assertEquals(900, player.getScore());
+    }
+
+    @Test
+    void testResetScore() {
         player.resetScore();
         assertEquals(0, player.getScore());
     }
 
     @Test
-    public void testSetAndGetWinner() {
-        player.setWinner(true);
-        assertTrue(player.isWinner());
-
-        player.setWinner(false);
-        assertFalse(player.isWinner());
+    void testBuyVowel() {
+        char vowel = 'a';
+        player.buyVowel(vowel);
+        List<Character> boughtVowels = player.getBoughtVowels();
+        assertTrue(boughtVowels.contains(vowel));
+        assertTrue(player.hasBoughtVowel(vowel));
     }
 
+    @Test
+    void testGuessConsonant() {
+        char consonant = 'b';
+        player.guessConsonant(consonant);
+        List<Character> guessedConsonants = player.getGuessedConsonants();
+        assertTrue(guessedConsonants.contains(consonant));
+        assertTrue(player.hasGuessedConsonant(consonant));
+    }
+
+    @Test
+    void testSetAndGetWinner() {
+        player.setWinner(true);
+        assertTrue(player.isWinner());
+    }
+
+    @Test
+    void testSetAndGetPlayerType() {
+        player.setPlayerType(PlayerType.XPLAYER);
+        assertEquals(PlayerType.XPLAYER, player.getPlayerType());
+    }
 }
+
+

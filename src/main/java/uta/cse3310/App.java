@@ -35,48 +35,52 @@ public class App extends WebSocketServer {
         super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
     }
 
-   @Override
-public void onOpen(WebSocket conn, ClientHandshake handshake) {
-    connectionId++;
-    System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
-
-    ServerEvent event = new ServerEvent();
-    Game game = null;
-
-    for (Game g : activeGames) {
-        if (g.getPlayers().size() < 4) {  // Assuming a maximum of 4 players per game
-            game = g;
-            System.out.println("found a match");
-            break;
-        }
+    public Vector<Game> getGames() {
+        return activeGames;
     }
 
-    if (game == null) {
-        List<Player> players = new ArrayList<>();
-        players.add(new Player("Player1"));  // Initialize at least one player
-        try {
-            game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        connectionId++;
+        System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
+
+        ServerEvent event = new ServerEvent(PlayerType.NOPLAYER, gameId);
+        Game game = null;
+
+        for (Game g : activeGames) {
+            if (g.getPlayers().size() < 4) {  // Assuming a maximum of 4 players per game
+                game = g;
+                System.out.println("Found a match");
+                break;
+            }
         }
-        game.setGameId(gameId++);
-        activeGames.add(game);
-        System.out.println("creating a new Game");
-    } else {
-        System.out.println("joining an existing game");
+
+        if (game == null) {
+            List<Player> players = new ArrayList<>();
+            players.add(new Player("Player" + connectionId, PlayerType.HUMAN));  // Initialize at least one player
+            try {
+                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            game.setGameId(gameId++);
+            activeGames.add(game);
+            System.out.println("Creating a new Game");
+        } else {
+            System.out.println("Joining an existing game");
+        }
+
+        conn.setAttachment(game);  // Attach the game to the connection
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(event);
+        conn.send(jsonString);
+        System.out.println("> " + jsonString);
+
+        jsonString = gson.toJson(game);
+        System.out.println("< " + jsonString);
+        broadcastToGame(game, jsonString);  // Broadcast to the specific game
     }
-
-    conn.setAttachment(game);  // This line ensures that the game is attached to the connection
-    Gson gson = new Gson();
-    String jsonString = gson.toJson(event);
-    conn.send(jsonString);
-    System.out.println("> " + jsonString);
-
-    jsonString = gson.toJson(game);
-    System.out.println("< " + jsonString);
-    broadcast(jsonString);
-}
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
@@ -101,7 +105,7 @@ public void onOpen(WebSocket conn, ClientHandshake handshake) {
             game.update(event);
             String jsonString = gson.toJson(game);
             System.out.println("> " + jsonString);
-            broadcast(jsonString);
+            broadcastToGame(game, jsonString);  // Broadcast to the specific game
         }
     }
 
@@ -122,6 +126,14 @@ public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("WebSocket server started successfully");
     }
 
+    private void broadcastToGame(Game game, String message) {
+        for (WebSocket conn : getConnections()) { // Changed from connections() to getConnections()
+            if (conn.getAttachment() == game) {
+                conn.send(message);
+            }
+        }
+    }
+
     public static void main(String[] args) {
         String httpPortEnv = System.getenv("HTTP_PORT");
         int httpPort = (httpPortEnv != null) ? Integer.parseInt(httpPortEnv) : 9005;
@@ -139,6 +151,8 @@ public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("WebSocket server started on port: " + wsPort);
     }
 }
+
+
 
 
 

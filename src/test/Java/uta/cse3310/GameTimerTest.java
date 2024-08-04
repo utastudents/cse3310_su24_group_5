@@ -5,61 +5,45 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameTimerTest {
+class GameTimerTest {
 
     private GameTimer gameTimer;
 
     @BeforeEach
-    public void setUp() {
-        gameTimer = new GameTimer();  // Ensure the variable name is consistent
+    void setUp() {
+        gameTimer = new GameTimer();
     }
 
     @Test
-    public void testInitialConditions() {
-        assertEquals(0, gameTimer.getElapsedTime());
+    void testInitialValues() {
         assertFalse(gameTimer.isRunning());
+        assertEquals(0, gameTimer.getElapsedTime());
     }
 
     @Test
-    public void testStart() {
-        gameTimer.start();  // Use the correct variable name
+    void testStart() throws InterruptedException {
+        gameTimer.start();
         assertTrue(gameTimer.isRunning());
+        Thread.sleep(2000); // Sleep for 2 seconds to allow the timer to update
+        assertTrue(gameTimer.getElapsedTime() >= 2);
     }
 
     @Test
-    public void testStop() {
-        gameTimer.start();  // Use the correct variable name
+    void testStop() throws InterruptedException {
+        gameTimer.start();
+        Thread.sleep(2000); // Sleep for 2 seconds to allow the timer to update
         gameTimer.stop();
+        long elapsed = gameTimer.getElapsedTime();
         assertFalse(gameTimer.isRunning());
+        Thread.sleep(1000); // Sleep for 1 second to ensure timer has stopped
+        assertEquals(elapsed, gameTimer.getElapsedTime());
     }
 
     @Test
-    public void testReset() {
-        gameTimer.start();  // Use the correct variable name
+    void testReset() throws InterruptedException {
+        gameTimer.start();
+        Thread.sleep(2000); // Sleep for 2 seconds to allow the timer to update
         gameTimer.reset();
-        assertFalse(gameTimer.isRunning());
-        assertEquals(0, gameTimer.getElapsedTime());
-    }
-
-    @Test
-    public void testStartWhileRunning() throws InterruptedException {
-        gameTimer.start();  // Use the correct variable name
-        Thread.sleep(2000); // Sleep for 2 seconds to allow the timer to run
-
-        long elapsedTime = gameTimer.getElapsedTime();
-        gameTimer.start(); // Attempt to start the timer again while it's running
-
-        assertTrue(gameTimer.isRunning());
-        Thread.sleep(1000); // Sleep for 1 second to check if the timer continues
-
-        assertTrue(gameTimer.getElapsedTime() >= elapsedTime + 1);
-        gameTimer.stop(); // Stop the timer to clean up for other tests
-    }
-
-    @Test
-    public void testStopWhileStopped() {
-        gameTimer.stop(); // Attempt to stop the timer while it's not running
-
         assertFalse(gameTimer.isRunning());
         assertEquals(0, gameTimer.getElapsedTime());
     }

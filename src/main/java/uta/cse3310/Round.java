@@ -4,60 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.HashMap;
 import java.util.HashSet;
-/* 
-//MAIN FUNCTION WOULD BE LIKE THIS
-
-public class Main {
-    public static void main(String[] args) 
-    {
-        //access to Wordlist file
-        WordList wordlist = new WordList();
-        Word words = new Word();
-       
-        //gathering the words
-        wordlist.gatherwords();
-        ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());//storing the words in a new array list 
-        
-        //printing out the words for verification
-        for (String word : wordsforgame)    
-        {
-            System.out.println("word(s) selected: " + word); 
-        }        
-
-
-
-        //gathering letters
-        HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
-
-        //showing letters
-        System.out.print("letters to guess: ");
-        for (char letters : lettersinword) 
-        {
-            System.out.print(letters);
-        }
-        System.err.println();
-
-
-        //simple guessing functionality
-        HashSet<Character> lettersguessed = new HashSet<>();
-        HashSet<Character> correctguesses = new HashSet<>();
-        int i = 17;
-        Scanner scanner = new Scanner(System.in);
-        
-        while ( i > 0)
-        {
-            System.out.print("Enter a letter: ");
-            String guess = scanner.next(); 
-            char letter = guess.charAt(0);
-            words.checksolutionandreveal(wordsforgame, letter, lettersinword, lettersguessed, correctguesses);
-            i--;
-        }   
-        scanner.close();
-    }
-}
-*/
 
 public class Round {
     private Word word;
@@ -65,50 +12,38 @@ public class Round {
     private int currentPlayerIndex;
     private List<Player> players;
     private boolean isRoundActive;
-    private static final int TURN_TIME_LIMIT = 100; // Time limit for each player's turn in seconds
-    private static final int VOWEL_COST = 50; // Cost for buying a vowel
-    WordList wordlist = new WordList();
-    Word words = new Word();
+    private static final int TURN_TIME_LIMIT = 100;
+    private static final int VOWEL_COST = 50;
+    private WordList wordlist = new WordList();
+    private Word words;
+    private ArrayList<String> wordsforgame;
     HashSet<Character> lettersguessed = new HashSet<>();
     HashSet<Character> correctguesses = new HashSet<>();
-    //wordlist.gatherwords();
-    ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());
-    HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
+    private HashSet<Character> lettersinword;
+    //ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());
+    //HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
 
-    
-    
     public Round(List<Player> players, String wordFilePath, String stakeFilePath) throws IOException {
         this.players = players;
-        //this.word = new Word(loadWords(wordFilePath));
-        
-        WordList wordlist = new WordList();
-        Word words = new Word();
         wordlist.gatherwords();
         //ArrayList<String> wordsforgame = new ArrayList<>(wordlist.getArrList());
+        this. wordsforgame = new ArrayList<>(wordlist.getArrList());
+        System.out.println("words chosen" + wordsforgame);
+        this.lettersinword = wordlist.findletters(wordsforgame);
         //HashSet<Character> lettersinword = wordlist.findletters(wordsforgame);
-
+        //this.words = new Word(wordsforgame);
         this.stake = new Stake(stakeFilePath);
         this.currentPlayerIndex = 0;
         this.isRoundActive = true;
     }
-/* 
-    private String[] loadWords(String filePath) throws IOException {
-        List<String> lines = java.nio.file.Files.readAllLines(java.nio.file.Paths.get(filePath));
-        return lines.toArray(new String[0]);
-    }
-        */
 
-
-//good
-    public void startRound() {
-        //System.out.println("New round started. Word to guess: "); // + word.getWordProgress());
+    public void startRound() {//might be here
         this.isRoundActive = true;
         nextTurn();
     }
 
-//good
     public void nextTurn() {
-        if (!isRoundActive) {
+        if (!isRoundActive) {//might be here
             System.out.println("Round is not active.");
             return;
         }
@@ -118,10 +53,8 @@ public class Round {
         currentPlayer.getTimer().start();
         System.out.println("Current player: " + currentPlayer.getName() + " has " + TURN_TIME_LIMIT + " seconds to guess.");
 
-        // Present options to the player
         presentOptions(currentPlayer);
 
-        // Schedule a task to check the timer and move to the next turn if time is up
         new java.util.Timer().schedule(new java.util.TimerTask() {
             @Override
             public void run() {
@@ -135,18 +68,16 @@ public class Round {
     }
 
     private void presentOptions(Player currentPlayer) {
-        //System.out.println("Word progress: " + word.getWordProgress());
         word.getWordProgress(wordsforgame, correctguesses);
-
+        System.out.println("\ncurrent word(s) to guess:" + wordsforgame);
         System.out.println("Choose an option:");
         System.out.println("1. Buy a vowel");
-        System.out.println("2. Select a constant");
+        System.out.println("2. Select a consonant");
         System.out.println("3. Solve the puzzle");
         int choice = getPlayerChoice();
-        handleChoice(currentPlayer, choice); // 1    
+        handleChoice(currentPlayer, choice);
     }
 
-//goof
     private int getPlayerChoice() {
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
@@ -155,30 +86,13 @@ public class Round {
     private void handleChoice(Player currentPlayer, int choice) {
         switch (choice) {
             case 1:
-                boolean validVowel = false;
-                while (!validVowel) {
-                    System.out.println("Enter a vowel to buy:");
-                    char vowel = getUserInput(); //custom method
-                    validVowel = buyVowel(currentPlayer, vowel); //custom method
-                }
+                buyVowel(currentPlayer);
                 break;
             case 2:
-                boolean validConstant = false;
-                while (!validConstant) {
-                    System.out.println("Enter a constant to select:");
-                    char constant = getUserInput();
-                    validConstant = selectConstant(currentPlayer, constant); //custom method
-                }
+                selectConsonant(currentPlayer);
                 break;
             case 3:
-                System.out.println("Enter the solution:");
-                Scanner scanner = new Scanner(System.in);
-                String solution = scanner.nextLine();
-                if (solvePuzzle(currentPlayer, solution)) {
-                    isRoundActive = false;
-                } else {
-                    advanceTurn();
-                }
+                solvePuzzle(currentPlayer);
                 break;
             default:
                 System.out.println("Invalid choice. Turn skipped.");
@@ -187,28 +101,69 @@ public class Round {
         }
     }
 
-    //good
+    private void buyVowel(Player currentPlayer) {
+        boolean validVowel = false;
+        while (!validVowel) {
+            System.out.println("Enter a vowel to buy:");
+            char vowel = getUserInput();
+            if ("aeiou".indexOf(vowel) != -1 && currentPlayer.getScore() >= VOWEL_COST && !currentPlayer.hasBoughtVowel(vowel)) {
+                validVowel = true;
+                currentPlayer.deductScore(VOWEL_COST);
+                currentPlayer.buyVowel(vowel);
+                processGuess(currentPlayer, vowel);
+            } else {
+                System.out.println("Invalid vowel or not enough points or already bought. Try again.");
+            }
+        }
+    }
+
+    private void selectConsonant(Player currentPlayer) {
+        boolean validConsonant = false;
+        while (!validConsonant) {
+            System.out.println("Enter a consonant to select:");
+            char consonant = getUserInput();
+            if ("aeiou".indexOf(consonant) == -1 && !currentPlayer.hasGuessedConsonant(consonant)) {
+                validConsonant = true;
+                currentPlayer.guessConsonant(consonant);
+                processGuess(currentPlayer, consonant);
+            } else {
+                System.out.println("Invalid consonant or already guessed. Try again.");
+            }
+        }
+    }
+
+    private void solvePuzzle(Player currentPlayer) {
+        System.out.println("Enter the solution:");
+        Scanner scanner = new Scanner(System.in);
+        String solution = scanner.nextLine();
+        if (word.solve(solution)) {
+            System.out.println(currentPlayer.getName() + " solved the puzzle!");
+            currentPlayer.addScore(10);
+            isRoundActive = false;
+        } else {
+            System.out.println("Incorrect solution by player " + currentPlayer.getName());
+            advanceTurn();
+        }
+    }
+
     private char getUserInput() {
         Scanner scanner = new Scanner(System.in);
         return scanner.next().charAt(0);
     }
 
     private void processGuess(Player currentPlayer, char guessedLetter) {
-        //boolean isCorrect = word.guessLetter(guessedLetter);
         int isCorrect = word.iscorrect(guessedLetter, lettersinword);
         if (isCorrect == 1) {
             System.out.println("Correct guess!");
             int points = stake.calculatePoints(guessedLetter);
             currentPlayer.addScore(points);
             System.out.println("Player " + currentPlayer.getName() + " awarded " + points + " points.");
-            //if (word.isFullyGuessed()) 
-            if(correctguesses.equals(lettersinword))
-            {
+            if (correctguesses.equals(lettersinword)) {
                 System.out.println("Word guessed correctly! Round over.");
                 isRoundActive = false;
             } else {
                 currentPlayer.getTimer().reset();
-                nextTurn(); // Player gets another turn
+                nextTurn();
             }
         } else {
             System.out.println("Incorrect guess.");
@@ -225,88 +180,38 @@ public class Round {
         }
     }
 
-    public boolean buyVowel(Player player, char vowel) {
-        if ("aeiou".indexOf(vowel) == -1) {
-            System.out.println("Invalid vowel: " + vowel);
-            return false;
-        }
-
-        if (player.getScore() < VOWEL_COST) {
-            System.out.println("Player " + player.getName() + " does not have enough points to buy a vowel.");
-            return false;
-        }
-
-        if (player.hasBoughtVowel(vowel)) {
-            System.out.println("Vowel " + vowel + " has already been bought by player " + player.getName());
-            return false;
-        }
-
-        player.deductScore(VOWEL_COST);
-        player.buyVowel(vowel);
-
-        processGuess(player, vowel);
-
-        return true;
-    }
-
-    public boolean selectConstant(Player player, char constant) {
-        if ("aeiou".indexOf(constant) != -1) {
-            System.out.println("Invalid constant: " + constant);
-            return false;
-        }
-
-        if (player.hasGuessedConstant(constant)) {
-            System.out.println("Constant " + constant + " has already been selected by player " + player.getName());
-            return false;
-        }
-
-        player.guessConstant(constant);
-
-        processGuess(player, constant);
-
-        return true;
-    }
-
-    public boolean solvePuzzle(Player player, String solution) {
-        int i = 9;
-        //if (word.solve(solution))
-        if(i == 7) 
-        {
-            System.out.println(player.getName() + " solved the puzzle!");
-            player.addScore(10); // Award points based on solution length
-            isRoundActive = false;
-            return true;
-        } else {
-            System.out.println("Incorrect solution by player " + player.getName());
-            advanceTurn();
-            return false;
-        }
-    }
-
-    /* 
-    public String getCurrentWordProgress() {
-        //return word.getWordProgress();
-        return word.getWordProgress(wordsforgame, correctguesses);
-    }*/
-
     public void resetRound() throws IOException {
-        //this.word.reset();
         this.stake.reset();
         this.currentPlayerIndex = 0;
         this.isRoundActive = true;
     }
 
-
     public boolean isRoundActive() {
         return isRoundActive;
     }
-//----------
+
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex);
+    }
+
+    public ArrayList<String> getWordsForGame() {
+        return wordsforgame;
+    }
+
     public static void main(String[] args) throws IOException {
         List<Player> players = new ArrayList<>();
         Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
 
-        game.addPlayer(new Player("Player1"));
-        game.addPlayer(new Player("Player2"));
+        game.addPlayer(new Player("Player1", PlayerType.HUMAN));
+        game.addPlayer(new Player("Player2", PlayerType.HUMAN));
         game.startGame();
     }
 }
+
+
+
+
+
+
+
+

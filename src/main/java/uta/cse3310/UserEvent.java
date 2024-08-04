@@ -1,5 +1,4 @@
 package uta.cse3310;
-//package org.junit.jupiter.api;
 
 public class UserEvent {
     private PlayerType playerType;
@@ -8,9 +7,11 @@ public class UserEvent {
     private String action;
     private String value;
 
-    public UserEvent(PlayerType playerType, int id) {
+    public UserEvent(PlayerType playerType, int id, String action, String value) {
         this.playerType = playerType;
         this.id = id;
+        this.action = action;
+        this.value = value;
     }
 
     public PlayerType getPlayerType() {
@@ -21,29 +22,30 @@ public class UserEvent {
         return id;
     }
 
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
-
     public String getPlayerId() {
         return playerId;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 
     public String getAction() {
         return action;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public String getValue() {
         return value;
     }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }
+
 
 

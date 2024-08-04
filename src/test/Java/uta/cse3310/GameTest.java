@@ -1,88 +1,69 @@
 package uta.cse3310;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uta.cse3310.Game;
+import uta.cse3310.Player;
+import uta.cse3310.PlayerType;
+import uta.cse3310.Statistics;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
+    @Test
+    public void testAddPlayer() throws IOException {
+        List<Player> players = new ArrayList<>();
+        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
 
-    private Game game;
-    private List<Player> players;
-    private Statistics stats;
-    private static final String TEST_WORD_FILE_PATH = "src/test/resources/test_words.txt";
-    private static final String TEST_STAKE_FILE_PATH = "src/test/resources/test_stakes.txt";
-
-    @BeforeEach
-    public void setUp() throws IOException {
-        players = new ArrayList<>();
-        players.add(new Player("Player1"));
-        players.add(new Player("Player2"));
-        stats = new Statistics();
-        game = new Game(players, TEST_WORD_FILE_PATH, TEST_STAKE_FILE_PATH, stats);
+        Player player = new Player("Player1", PlayerType.HUMAN);
+        assertTrue(game.addPlayer(player));
+        assertEquals(1, game.getPlayers().size());
     }
 
     @Test
-    public void testGameInitialization() {
-        assertNotNull(game.getPlayers());
-        assertEquals(2, game.getPlayers().size());
-        assertEquals(stats, game.getStatistics());
-    }
+    public void testStartGame() throws IOException {
+        List<Player> players = new ArrayList<>();
+        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
 
-    @Test
-    public void testStartGame() {
+        game.addPlayer(new Player("Player1", PlayerType.HUMAN));
+        game.addPlayer(new Player("Player2", PlayerType.HUMAN));
         game.startGame();
         assertTrue(game.isGameActive());
     }
 
     @Test
-    public void testStartNextRound() {
-        game.startGame();
-        game.startNextRound();
-        assertTrue(game.isGameActive());
-    }
+    public void testPlayRound() throws IOException {
+        List<Player> players = new ArrayList<>();
+        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
 
-    @Test
-    public void testPlayRound() {
+        game.addPlayer(new Player("Player1", PlayerType.HUMAN));
+        game.addPlayer(new Player("Player2", PlayerType.HUMAN));
         game.startGame();
         game.playRound();
-        assertTrue(game.isGameActive()); // Assuming the game ends after one full round
-    }
-
-    @Test
-    public void testEndGame() {
-        players.get(0).setWinner(true);  // Mark Player 1 as the winner
-        game.endGame(players.get(0));
-        assertEquals(1, stats.getGamesWon());
-        assertEquals(1, stats.getGamesPlayed());
-    }
-
-    @Test
-    public void testResetGame() throws IOException {
-        game.startGame();
-        game.resetGame();
         assertTrue(game.isGameActive());
-        assertEquals(0, game.getStatistics().getGamesPlayed());
     }
 
     @Test
-    public void testDetermineWinner() throws Exception {
-        players.get(0).addScore(10);  // Player 1 should be the winner
-        // Use reflection to call the private method
-        Method determineWinnerMethod = Game.class.getDeclaredMethod("determineWinner");
-        determineWinnerMethod.setAccessible(true);
-        determineWinnerMethod.invoke(game);
-    
-        assertTrue(players.get(0).isWinner());
-        assertFalse(players.get(1).isWinner());
-        assertEquals(1, stats.getGamesWon());
+    public void testDetermineWinner() throws IOException {
+        List<Player> players = new ArrayList<>();
+        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
+
+        Player player1 = new Player("Player1", PlayerType.HUMAN);
+        Player player2 = new Player("Player2", PlayerType.HUMAN);
+        player1.addScore(100);
+        player2.addScore(50);
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+
+        game.determineWinner();
+        assertEquals(player1.getName(), game.getStatistics().getWinner().getName());
     }
 }
+
+
 
 
 

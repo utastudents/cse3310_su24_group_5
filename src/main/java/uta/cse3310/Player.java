@@ -9,18 +9,19 @@ public class Player {
     private String name;
     private int score;
     private boolean iswinner;
-    private GameTimer timer; // Updated reference
+    private GameTimer timer;
     private List<Character> boughtVowels;
-    private List<Character> guessedConstants;
+    private List<Character> guessedConsonants;
+    private PlayerType playerType;
 
-    
-    public Player(String name) {
+    public Player(String name, PlayerType playerType) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.score = 1000;
-        this.timer = new GameTimer(); // Updated reference
+        this.timer = new GameTimer();
         this.boughtVowels = new ArrayList<>();
-        this.guessedConstants = new ArrayList<>();
+        this.guessedConsonants = new ArrayList<>();
+        this.playerType = playerType;
     }
 
     public boolean isWinner() {
@@ -59,7 +60,7 @@ public class Player {
         return timer;
     }
 
-     public boolean hasBoughtVowel(char vowel) {
+    public boolean hasBoughtVowel(char vowel) {
         return this.boughtVowels.contains(vowel);
     }
 
@@ -71,16 +72,29 @@ public class Player {
         return this.boughtVowels;
     }
 
-    public void guessConstant(char constant) {
-        this.guessedConstants.add(constant);
+    public void guessConsonant(char consonant) {
+        this.guessedConsonants.add(consonant);
     }
 
-    public List<Character> getGuessedConstants() {
-        return this.guessedConstants;
+    public List<Character> getGuessedConsonants() {
+        return this.guessedConsonants;
     }
 
-    public boolean hasGuessedConstant(char constant) {
-        return this.guessedConstants.contains(constant);
+    public boolean hasGuessedConsonant(char consonant) {
+        return this.guessedConsonants.contains(consonant);
+    }
+
+    public PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    public void setPlayerType(PlayerType playerType) {
+        this.playerType = playerType;
     }
 }
+
+
+
+
+
 

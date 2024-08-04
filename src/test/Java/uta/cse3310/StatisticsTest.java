@@ -2,58 +2,60 @@ package uta.cse3310;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StatisticsTest {
+class StatisticsTest {
 
-    private Statistics stats;
+    private Statistics statistics;
+    private Player winner;
+    private Player loser;
 
     @BeforeEach
-    public void setUp() {
-        stats = new Statistics();
+    void setUp() {
+        statistics = new Statistics();
+        winner = new Player("Winner", PlayerType.HUMAN);
+        loser = new Player("Loser", PlayerType.HUMAN);
     }
 
     @Test
-    public void testInitialConditions() {
-        assertEquals(0, stats.getGamesPlayed());
-        assertEquals(0, stats.getGamesWon());
-        assertEquals(0, stats.getGamesLost());
+    void testInitialValues() {
+        assertEquals(0, statistics.getGamesPlayed());
+        assertEquals(0, statistics.getGamesWon());
+        assertEquals(0, statistics.getGamesLost());
     }
 
     @Test
-    public void testIncrementGamesPlayed() {
-        stats.incrementGamesPlayed();
-        assertEquals(1, stats.getGamesPlayed());
+    void testIncrementGamesPlayed() {
+        statistics.incrementGamesPlayed();
+        assertEquals(1, statistics.getGamesPlayed());
     }
 
     @Test
-    public void testIncrementGamesWon() {
-        stats.incrementGamesWon();
-        assertEquals(1, stats.getGamesWon());
+    void testIncrementGamesWon() {
+        statistics.incrementGamesWon();
+        assertEquals(1, statistics.getGamesWon());
     }
 
     @Test
-    public void testIncrementGamesLost() {
-        stats.incrementGamesLost();
-        assertEquals(1, stats.getGamesLost());
+    void testIncrementGamesLost() {
+        statistics.incrementGamesLost();
+        assertEquals(1, statistics.getGamesLost());
     }
 
     @Test
-    public void testUpdateWinner() {
-        Player player = new Player("TestPlayer");
-        player.setWinner(true);
-        stats.updateWinner(player);
-        assertEquals(1, stats.getGamesWon());
-        assertEquals(0, stats.getGamesLost());
+    void testUpdateWinner() {
+        winner.setWinner(true);
+        statistics.updateWinner(winner);
+        assertEquals(1, statistics.getGamesWon());
+        assertEquals(0, statistics.getGamesLost());
 
-        Player player2 = new Player("TestPlayer2");
-        player2.setWinner(false);
-        stats.updateWinner(player2);
-        assertEquals(1, stats.getGamesWon());
-        assertEquals(1, stats.getGamesLost());
+        loser.setWinner(false);
+        statistics.updateWinner(loser);
+        assertEquals(1, statistics.getGamesWon());
+        assertEquals(1, statistics.getGamesLost());
     }
 }
+
 
 
 

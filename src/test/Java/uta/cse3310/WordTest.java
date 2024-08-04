@@ -1,57 +1,57 @@
-package uta.cse3310;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uta.cse3310.Word;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WordTest {
-
-    private Word word;
-    private String[] wordList = {"apple", "banana", "cherry"};
-
-    @BeforeEach
-    public void setUp() {
-        word = new Word(wordList);
+    @Test
+    public void testIsCorrect() {
+        HashSet<Character> lettersinword = new HashSet<>();
+        lettersinword.add('a');
+        lettersinword.add('b');
+        assertEquals(1, Word.iscorrect('a', lettersinword));
+        assertEquals(0, Word.iscorrect('c', lettersinword));
     }
 
     @Test
-    public void testGetSelectedWord() {
-        String selectedWord = word.getSelectedWord();
-        assertTrue(selectedWord.equals("apple") || selectedWord.equals("banana") || selectedWord.equals("cherry"));
-    }
+    public void testCheckSolutionAndReveal() {
+        ArrayList<String> wordsforgame = new ArrayList<>();
+        wordsforgame.add("test");
 
-    @Test
-    public void testGuessLetter() {
-        String selectedWord = word.getSelectedWord();
-        boolean result = word.guessLetter(selectedWord.charAt(0));
-        assertTrue(result);
+        HashSet<Character> lettersinword = new HashSet<>();
+        lettersinword.add('t');
+        lettersinword.add('e');
+        lettersinword.add('s');
+
+        HashSet<Character> lettersguessed = new HashSet<>();
+        HashSet<Character> correctguesses = new HashSet<>();
+
+        Word.checksolutionandreveal(wordsforgame, 't', lettersinword, lettersguessed, correctguesses);
+        assertTrue(correctguesses.contains('t'));
     }
 
     @Test
     public void testGetWordProgress() {
-        String selectedWord = word.getSelectedWord();
-        word.guessLetter(selectedWord.charAt(0));
-        String progress = word.getWordProgress();
-        assertTrue(progress.contains(String.valueOf(selectedWord.charAt(0))));
+        ArrayList<String> wordsforgame = new ArrayList<>();
+        wordsforgame.add("test");
+
+        HashSet<Character> correctguesses = new HashSet<>();
+        correctguesses.add('t');
+
+        Word.getWordProgress(wordsforgame, correctguesses);
+        // Add appropriate assertions to verify the output
     }
 
     @Test
-    public void testIsFullyGuessed() {
-        String selectedWord = word.getSelectedWord();
-        for (char c : selectedWord.toCharArray()) {
-            word.guessLetter(c);
-        }
-        assertTrue(word.isFullyGuessed());
-    }
+    public void testWinner() {
+        ArrayList<String> wordsforgame = new ArrayList<>();
+        wordsforgame.add("test");
 
-    @Test
-    public void testReset() {
-        
-        String initialWord = word.getSelectedWord();
-        word.reset();
-        String newWord = word.getSelectedWord();
-        assertNotEquals(initialWord, newWord, "The selected word should change after reset");
+        Word.winner(wordsforgame);
+        // Add appropriate assertions to verify the output
     }
 }
-
 

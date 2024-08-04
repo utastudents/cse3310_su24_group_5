@@ -25,10 +25,12 @@ public class Stake {
     }
 
     public int calculatePoints(char guessedLetter) {
-        // Example calculation logic needs to be replaced with actual game logic
-        return 10;
+        // Placeholder for actual point calculation logic
+        // Implement your game logic here
+        return 10; // Example fixed value, replace with actual logic
     }
 }
+
 
 
 

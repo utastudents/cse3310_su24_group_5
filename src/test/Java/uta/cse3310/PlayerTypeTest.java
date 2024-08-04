@@ -4,21 +4,27 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PlayerTypeTest {
+class PlayerTypeTest {
 
     @Test
-    public void testPlayerTypeValues() {
-        PlayerType[] expectedValues = {PlayerType.NOPLAYER, PlayerType.XPLAYER, PlayerType.HUMAN};
-        PlayerType[] actualValues = PlayerType.values();
-        
-        assertArrayEquals(expectedValues, actualValues);
+    void testPlayerTypeValues() {
+        assertNotNull(PlayerType.valueOf("NOPLAYER"));
+        assertNotNull(PlayerType.valueOf("XPLAYER"));
+        assertNotNull(PlayerType.valueOf("HUMAN"));
     }
 
     @Test
-    public void testPlayerTypeValueOf() {
+    void testNumberOfPlayerTypeValues() {
+        PlayerType[] values = PlayerType.values();
+        assertEquals(3, values.length);
+    }
+
+    @Test
+    void testPlayerTypeValue() {
         assertEquals(PlayerType.NOPLAYER, PlayerType.valueOf("NOPLAYER"));
         assertEquals(PlayerType.XPLAYER, PlayerType.valueOf("XPLAYER"));
         assertEquals(PlayerType.HUMAN, PlayerType.valueOf("HUMAN"));
     }
 }
+
 

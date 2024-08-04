@@ -5,42 +5,52 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StakeTest {
+class StakeTest {
 
     private Stake stake;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         stake = new Stake();
     }
 
     @Test
-    public void testDefaultConstructor() {
+    void testDefaultConstructor() {
         assertNull(stake.getCurrentStake());
     }
 
     @Test
-    public void testConstructorWithArgument() {
-        Stake stakeWithArgument = new Stake("High");
-        assertEquals("High", stakeWithArgument.getCurrentStake());
+    void testParameterizedConstructor() {
+        Stake stakeWithParam = new Stake("High");
+        assertEquals("High", stakeWithParam.getCurrentStake());
     }
 
     @Test
-    public void testGetAndSetCurrentStake() {
-        stake.setCurrentStake("Low");
-        assertEquals("Low", stake.getCurrentStake());
-
+    void testGetCurrentStake() {
         stake.setCurrentStake("Medium");
         assertEquals("Medium", stake.getCurrentStake());
     }
 
     @Test
-    public void testReset() {
-        stake.setCurrentStake("High");
+    void testSetCurrentStake() {
+        stake.setCurrentStake("Low");
+        assertEquals("Low", stake.getCurrentStake());
+    }
+
+    @Test
+    void testReset() {
+        stake.setCurrentStake("Medium");
         stake.reset();
         assertNull(stake.getCurrentStake());
     }
+
+    @Test
+    void testCalculatePoints() {
+        int points = stake.calculatePoints('a');
+        assertEquals(10, points); // Adjust based on actual calculation logic
+    }
 }
+
 
 
 
