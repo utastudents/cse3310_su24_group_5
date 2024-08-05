@@ -157,7 +157,10 @@ public class Round {
             System.out.println("Correct guess!");
             int points = stake.calculatePoints(guessedLetter);
             currentPlayer.addScore(points);
+            correctguesses.add(guessedLetter);
             System.out.println("Player " + currentPlayer.getName() + " awarded " + points + " points.");
+            //word.getWordProgress(wordsforgame, correctguesses);
+            System.out.println("\ncorrect guesses: " + correctguesses);
             if (correctguesses.equals(lettersinword)) {
                 System.out.println("Word guessed correctly! Round over.");
                 isRoundActive = false;
