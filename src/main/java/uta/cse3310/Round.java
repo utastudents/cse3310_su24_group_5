@@ -136,7 +136,11 @@ public class Round {
         System.out.println("Enter the solution:");
         Scanner scanner = new Scanner(System.in);
         String solution = scanner.nextLine();
-        if (word.solve(solution)) {
+        //String solutions = String.join("", solution);
+        //System.out.println("\nwhat you typed: " + solution);
+        String solutions = solution.replace(" ", "");
+        if (word.solve(solutions) == true) {
+        //if(correctguesses.equals(lettersinword)){
             System.out.println(currentPlayer.getName() + " solved the puzzle!");
             currentPlayer.addScore(10);
             isRoundActive = false;

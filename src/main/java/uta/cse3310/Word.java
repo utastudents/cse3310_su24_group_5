@@ -58,7 +58,10 @@ public class Word {
 
     public boolean solve(String solution) {
         String combinedWords = String.join("", wordsforgame);
-        return combinedWords.equals(solution);
+        System.out.println("\ncombined words for game: " + wordsforgame);
+        String combinedsolution  = String.join(" ", solution);
+        System.out.println("what you typed combined: "+ combinedsolution);
+        return combinedWords.equals(combinedsolution);
     }
 }
 
