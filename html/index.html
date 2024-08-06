@@ -18,7 +18,7 @@
             gap: 5px;
             margin-bottom: 20px;
         }
-      .black-cell {
+        .black-cell {
             background-color: black;
         }
         .game-board div {
@@ -57,6 +57,34 @@
             text-align: center;
             margin-top: 20px;
         }
+        .input-section, .choice-section {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .input-section div, .choice-section div {
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+        }
+        .input-section label, .choice-section label {
+            width: 150px;
+            font-weight: bold;
+        }
+        .input-section input, .choice-section input {
+            flex: 1;
+            padding: 5px;
+        }
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -88,12 +116,12 @@
                 <div> </div><div> </div><div> </div><div> </div><div> </div><div> </div><div> </div>
                 <div> </div><div> </div><div>r</div><div> </div><div> </div><div> </div><div> </div>
                 <div> </div><div>i</div><div> </div><div>f</div><div> </div><div> </div><div> </div>
-                 <div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div>
+                <div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div>
             </div>
             <p>Guess: i</p>
             <p>Timer: 20</p>
             <p>Stake: 40</p>
-            <button>Play</button>
+            <button id="playButton">Play</button>
             <h3>Scores</h3>
             <table class="score-table">
                 <tr><td>User217</td><td>100</td></tr>
@@ -108,9 +136,85 @@
     </div>
 
     <div class="actions">
-        <button>Join new game</button>
+        <button id="joinButton">Join new game</button>
     </div>
+
+    <div class="instructions">
+        <p>1 to buy vowel ($50)</p>
+        <p>2 to buy constant</p>
+        <p>3 to solve</p>
+    </div>
+
+    <div class="input-section">
+        <div>
+            <label for="solveInput">Solve:</label>
+            <input type="text" id="solveInput" placeholder="Enter solution">
+        </div>
+        <div>
+            <label for="vowelInput">Vowel:</label>
+            <input type="text" id="vowelInput" placeholder="Enter vowel">
+        </div>
+        <div>
+            <label for="constantInput">Constant:</label>
+            <input type="text" id="constantInput" placeholder="Enter constant">
+        </div>
+    </div>
+
+    <div class="choice-section">
+        <div>
+            <label for="choiceInput">Choice:</label>
+            <input type="number" id="choiceInput" placeholder="Enter 1, 2, or 3" min="1" max="3">
+        </div>
+    </div>
+
+    <script>
+        let socket;
+
+        // Connect to WebSocket when the page loads
+        window.onload = function() {
+            connectWebSocket();
+        };
+
+        function connectWebSocket() {
+            socket = new WebSocket('ws://localhost:9105');
+            socket.onopen = function() {
+                console.log('WebSocket connection established');
+            };
+            socket.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                console.log('Message from server: ', message);
+                // Handle incoming messages and update the UI accordingly
+            };
+            socket.onclose = function() {
+                console.log('WebSocket connection closed');
+            };
+            socket.onerror = function(error) {
+                console.error('WebSocket error: ', error);
+            };
+        }
+
+        const playButton = document.getElementById('playButton');
+        const joinButton = document.getElementById('joinButton');
+
+        playButton.addEventListener('click', function() {
+            // Handle play button click
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const message = { type: 'play', data: {/* your data */} };
+                socket.send(JSON.stringify(message));
+            } else {
+                console.error('WebSocket is not connected.');
+            }
+        });
+
+        joinButton.addEventListener('click', function() {
+            // Handle join button click
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const message = { type: 'join', data: {/* your data */} };
+                socket.send(JSON.stringify(message));
+            } else {
+                console.error('WebSocket is not connected.');
+            }
+        });
+    </script>
 </body>
 </html>
-
-
