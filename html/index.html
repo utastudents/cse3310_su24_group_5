@@ -57,34 +57,6 @@
             text-align: center;
             margin-top: 20px;
         }
-        .input-section, .choice-section {
-            margin-top: 20px;
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .input-section div, .choice-section div {
-            margin-bottom: 10px;
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            align-items: center;
-        }
-        .input-section label, .choice-section label {
-            width: 150px;
-            font-weight: bold;
-        }
-        .input-section input, .choice-section input {
-            flex: 1;
-            padding: 5px;
-        }
-        .instructions {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -93,97 +65,65 @@
     <div class="info-section">
         <div class="lobby-leaderboard">
             <h2>Lobby Leaderboard</h2>
-            <table class="leaderboard-table">
+            <table class="leaderboard-table" id="leaderboard-table">
                 <tr><th>Rank</th><th>User</th><th>Score</th></tr>
-                <tr><td>1</td><td>User1</td><td>1000</td></tr>
-                <tr><td>2</td><td>User43</td><td>637</td></tr>
-                <tr><td>3</td><td>User16</td><td>548</td></tr>
-                <tr><td>4</td><td>User7</td><td>522</td></tr>
-                <tr><td>5</td><td>User789</td><td>473</td></tr>
-                <tr><td>6</td><td>User35</td><td>469</td></tr>
-                <tr><td>7</td><td>User112</td><td>457</td></tr>
-                <tr><td>8</td><td>User68</td><td>431</td></tr>
-                <tr><td>9</td><td>User97</td><td>425</td></tr>
-                <tr><td>10</td><td>User148</td><td>410</td></tr>
-            </table>
+            </table> <!--leaderboard here -->
         </div>
 
         <div class="current-game">
             <h2>Current Game</h2>
-            <p>Category: Games</p>
-            <div class="game-board">
-                <div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div>
-                <div> </div><div> </div><div> </div><div> </div><div> </div><div> </div><div> </div>
-                <div> </div><div> </div><div>r</div><div> </div><div> </div><div> </div><div> </div>
-                <div> </div><div>i</div><div> </div><div>f</div><div> </div><div> </div><div> </div>
-                <div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div><div class="black-cell"> </div>
-            </div>
-            <p>Guess: i</p>
-            <p>Timer: 20</p>
-            <p>Stake: 40</p>
-            <button id="playButton">Play</button>
+            <p id="category">Category: Games</p>
+            <div class="game-board" id="game-board"></div> <!--board here -->
+            <p id="guess">Guess: </p>
+            <p id="timer">Timer: </p>
+            <p id="stake">Stake: </p>
             <h3>Scores</h3>
-            <table class="score-table">
-                <tr><td>User217</td><td>100</td></tr>
-                <tr><td>User224</td><td>70</td></tr>
-                <tr><td>User225</td><td>0</td></tr>
-                <tr><td>User226</td><td>500</td></tr>
-            </table>
-            <p>Status: closed</p>
-            <p>Round: 2/3</p>
-            <p>Winner: </p>
+            <table class="score-table" id="score-table"></table> <!--table here -->
+            <p id="status">Status: </p>
+            <p id="round">Round: </p>
+            <p id="winner">Winner: </p>
         </div>
     </div>
 
     <div class="actions">
-        <button id="joinButton">Join new game</button>
+        <input type="text" id="vowelInput" placeholder="Enter vowel">
+        <button id="buyVowelButton">Buy Vowel</button>
+        <input type="text" id="consonantInput" placeholder="Enter consonant">
+        <button id="selectConsonantButton">Select Consonant</button>
+        <input type="text" id="solutionInput" placeholder="Enter solution">
+        <button id="solvePuzzleButton">Solve Puzzle</button>
     </div>
-
-    <div class="instructions">
-        <p>1 to buy vowel ($50)</p>
-        <p>2 to buy constant</p>
-        <p>3 to solve</p>
-    </div>
-
-    <div class="input-section">
-        <div>
-            <label for="solveInput">Solve:</label>
-            <input type="text" id="solveInput" placeholder="Enter solution">
-        </div>
-        <div>
-            <label for="vowelInput">Vowel:</label>
-            <input type="text" id="vowelInput" placeholder="Enter vowel">
-        </div>
-        <div>
-            <label for="constantInput">Constant:</label>
-            <input type="text" id="constantInput" placeholder="Enter constant">
-        </div>
-    </div>
-
-    <div class="choice-section">
-        <div>
-            <label for="choiceInput">Choice:</label>
-            <input type="number" id="choiceInput" placeholder="Enter 1, 2, or 3" min="1" max="3">
-        </div>
-    </div>
-
+    
     <script>
         let socket;
+        const gameBoard = document.getElementById('game-board');
+        const guessDisplay = document.getElementById('guess');
+        const timerDisplay = document.getElementById('timer');
+        const stakeDisplay = document.getElementById('stake');
+        const scoreTable = document.getElementById('score-table');
+        const statusDisplay = document.getElementById('status');
+        const roundDisplay = document.getElementById('round');
+        const winnerDisplay = document.getElementById('winner');
+    
+        //const joinButton = document.getElementById('joinButton');
+        const buyVowelButton = document.getElementById('buyVowelButton');
+        const selectConsonantButton = document.getElementById('selectConsonantButton');
+        const solvePuzzleButton = document.getElementById('solvePuzzleButton');
 
-        // Connect to WebSocket when the page loads
-        window.onload = function() {
-            connectWebSocket();
-        };
-
+        const vowelInput = document.getElementById('vowelInput');
+        const consonantInput = document.getElementById('consonantInput');
+        const solutionInput = document.getElementById('solutionInput');
+    
         function connectWebSocket() {
             socket = new WebSocket('ws://localhost:9105');
             socket.onopen = function() {
                 console.log('WebSocket connection established');
+                joinGame();
             };
             socket.onmessage = function(event) {
                 const message = JSON.parse(event.data);
                 console.log('Message from server: ', message);
-                // Handle incoming messages and update the UI accordingly
+                updateGameState(message);
             };
             socket.onclose = function() {
                 console.log('WebSocket connection closed');
@@ -192,29 +132,77 @@
                 console.error('WebSocket error: ', error);
             };
         }
-
-        const playButton = document.getElementById('playButton');
-        const joinButton = document.getElementById('joinButton');
-
-        playButton.addEventListener('click', function() {
-            // Handle play button click
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                const message = { type: 'play', data: {/* your data */} };
+    
+        /*function joinGame() {
+            const message = { action: 'join' };
+            socket.send(JSON.stringify(message));
+        }*/
+    
+        function updateGameState(gameState) {
+            //Update board
+            gameBoard.innerHTML = '';
+            gameState.rounds[gameState.currentRoundIndex].word.wordsforgame.forEach(word => {
+                word.split('').forEach(letter => {
+                    const cell = document.createElement('div');
+                    cell.textContent = gameState.rounds[gameState.currentRoundIndex].correctguesses.includes(letter) ? letter : '_';
+                    gameBoard.appendChild(cell);
+                });
+            });
+    
+            //Update UI
+            guessDisplay.textContent = 'Guess: ' + (gameState.rounds[gameState.currentRoundIndex].guess || '');
+            timerDisplay.textContent = 'Timer: ' + (gameState.rounds[gameState.currentRoundIndex].timer || '');
+            stakeDisplay.textContent = 'Stake: ' + (gameState.rounds[gameState.currentRoundIndex].stake.currentStake || '');
+            statusDisplay.textContent = 'Status: ' + (gameState.isGameActive ? 'active' : 'closed');
+            roundDisplay.textContent = 'Round: ' + (gameState.currentRoundIndex + 1) + '/' + gameState.rounds.length;
+            winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : '');
+    
+            //Update score table
+            scoreTable.innerHTML = '';
+            gameState.players.forEach(player => {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const scoreCell = document.createElement('td');
+                nameCell.textContent = player.name;
+                scoreCell.textContent = player.score;
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                scoreTable.appendChild(row);
+            });
+    
+            // Enable or disable buttons if less than 2 players
+            const buttonsEnabled = gameState.players.length >= 2;
+            buyVowelButton.disabled = !buttonsEnabled;
+            selectConsonantButton.disabled = !buttonsEnabled;
+            solvePuzzleButton.disabled = !buttonsEnabled;
+        }
+    
+        //joinButton.addEventListener('click', joinGame);
+        buyVowelButton.addEventListener('click', () => {
+            const vowel = vowelInput.value.trim().toLowerCase();
+            if (vowel) {
+                const message = { action: 'BUY_VOWEL', value: vowel };
                 socket.send(JSON.stringify(message));
-            } else {
-                console.error('WebSocket is not connected.');
             }
         });
-
-        joinButton.addEventListener('click', function() {
-            // Handle join button click
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                const message = { type: 'join', data: {/* your data */} };
+        selectConsonantButton.addEventListener('click', () => {
+            const consonant = consonantInput.value.trim().toLowerCase();
+            if (consonant) {
+                const message = { action: 'SELECT_CONSONANT', value: consonant };
                 socket.send(JSON.stringify(message));
-            } else {
-                console.error('WebSocket is not connected.');
             }
         });
+        solvePuzzleButton.addEventListener('click', () => {
+            const solution = solutionInput.value.trim().toLowerCase();
+            if (solution) {
+                const message = { action: 'SOLVE_PUZZLE', value: solution };
+                socket.send(JSON.stringify(message));
+            }
+        });
+    
+        // Connect to WebSocket when the page loads
+        window.onload = connectWebSocket;
     </script>
+    
 </body>
 </html>
