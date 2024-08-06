@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TimerTask;
+//import java.util.concurrent.CountDownLatch;
 import java.util.HashSet;
 
 public class Round {
@@ -20,6 +22,9 @@ public class Round {
     HashSet<Character> correctguesses = new HashSet<>();
     private HashSet<Character> lettersinword;
     private transient Scanner scanner;
+    public boolean waitingForInput = false;
+    private final Object turnLock = new Object();
+    //private CountDownLatch latch;
 
     @SuppressWarnings("static-access")
     public Round(List<Player> players, String wordFilePath, String stakeFilePath, Scanner scanner) throws IOException {
@@ -64,20 +69,42 @@ public class Round {
         currentPlayer.getTimer().reset();
         currentPlayer.getTimer().start();
         System.out.println("Current player: " + currentPlayer.getName() + " has " + TURN_TIME_LIMIT + " seconds to guess.");
+        waitingForInput = true;
 
-        //presentOptions(currentPlayer);
+        synchronized (turnLock) {
+            new java.util.Timer().schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    synchronized (turnLock) {
+                        if (currentPlayer.getTimer().getElapsedTime() >= TURN_TIME_LIMIT || !waitingForInput) {
+                            System.out.println("Time is up for player " + currentPlayer.getName());
+                            currentPlayer.getTimer().stop();
+                            waitingForInput = false;
+                            turnLock.notifyAll();
+                            advanceTurn();
+                        }
+                    }
+                }
+            }, TURN_TIME_LIMIT * 1000);
 
-        new java.util.Timer().schedule(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                if (currentPlayer.getTimer().getElapsedTime() >= TURN_TIME_LIMIT) {
-                    System.out.println("Time is up for player " + currentPlayer.getName());
-                    currentPlayer.getTimer().stop();
-                    advanceTurn();
+            while (waitingForInput) {
+                try {
+                    turnLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Thread interrupted: " + e.getMessage());
                 }
             }
-        }, TURN_TIME_LIMIT * 1000);
+        }
     }
+
+    public void playerActionTaken() {
+        synchronized (turnLock) {
+            waitingForInput = false;
+            turnLock.notifyAll();
+        }
+    }
+
 /* 
     @SuppressWarnings("static-access")
     private void presentOptions(Player currentPlayer) {
@@ -207,7 +234,7 @@ public class Round {
         }
     }
 
-    private void advanceTurn() {
+    public void advanceTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
         currentPlayer.getTimer().stop();
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
