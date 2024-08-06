@@ -60,6 +60,10 @@ public class Game {
         this.gameId = gameId;
     }
 
+    public int getGameId() {
+        return gameId;
+    }
+
     public boolean addPlayer(Player player) {
         if (players.size() < MAX_PLAYERS) {
             players.add(player);
@@ -92,12 +96,15 @@ public class Game {
         switch (action) {
             case "BUY_VOWEL":
                 currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
+                currentRound.waitingForInput = false;
                 break;
             case "SELECT_CONSONANT":
                 currentRound.selectConsonant(currentPlayer, event.getValue().charAt(0));
+                currentRound.waitingForInput = false;
                 break;
             case "SOLVE_PUZZLE":
                 currentRound.solvePuzzle(currentPlayer, event.getValue());
+                currentRound.waitingForInput = false;
                 break;
             default:
                 System.out.println("Unknown action: " + action);
@@ -115,8 +122,10 @@ public class Game {
 
         if (!inTestingMode) {
             for(int i =0; i < 3; i++){
+                System.out.println("back in game");
+                isGameActive = true;
                 startNextRound();
-                System.out.println("back in game"); 
+                 
                 if(i == 2){
                     isGameActive = false;
                     determineWinner();
