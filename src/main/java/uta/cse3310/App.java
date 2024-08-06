@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Vector;
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
@@ -59,17 +60,26 @@ public class App extends WebSocketServer {
             List<Player> players = new ArrayList<>();
             players.add(new Player("Player" + connectionId, PlayerType.HUMAN));  // Initialize at least one player
             try {
-                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics());
+                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics(), new Scanner(System.in));
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
             }
             game.setGameId(gameId++);
             activeGames.add(game);
+            
             System.out.println("Creating a new Game");
         } else {
+            game.addPlayer(new Player("Player" + connectionId, PlayerType.HUMAN));
             System.out.println("Joining an existing game");
+            if (game.getPlayers().size() == 2) {
+                game.isGameActive = true;
+                game.startGame();
+            }
         }
+
+        
+
 
         conn.setAttachment(game);  // Attach the game to the connection
         Gson gson = new Gson();
