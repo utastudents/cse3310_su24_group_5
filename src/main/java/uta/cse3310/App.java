@@ -72,10 +72,6 @@ public class App extends WebSocketServer {
         } else {
             game.addPlayer(new Player("Player" + connectionId, PlayerType.HUMAN));
             System.out.println("Joining an existing game");
-            if (game.getPlayers().size() == 2) {
-                game.isGameActive = true;
-                game.startGame();
-            }
         }
 
         
@@ -90,6 +86,10 @@ public class App extends WebSocketServer {
         jsonString = gson.toJson(game);
         System.out.println("< " + jsonString);
         broadcastToGame(game, jsonString);  // Broadcast to the specific game
+
+        if (game.getPlayers().size() == 2) {
+            game.startGame();
+        }
     }
 
     @Override
