@@ -3,29 +3,53 @@ package uta.cse3310;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.java_websocket.WebSocket;
+import java.util.Scanner;
 
+import org.java_websocket.WebSocket;
 
 public class Game {
     private static final int MAX_PLAYERS = 4;
     private List<Player> players;
     private List<Round> rounds;
     private int currentRoundIndex;
-    private boolean isGameActive;
+    public boolean isGameActive;
     private Statistics stats;
     private int gameId;
+    private boolean inTestingMode;
+    private transient Scanner scanner;  // Marked as transient
 
-    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats) throws IOException {
+    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats, Scanner scanner) throws IOException {
         this.players = players;
+        this.rounds = new ArrayList<>();
+        this.scanner = scanner;
+        this.currentRoundIndex = 0;
+        this.isGameActive = false;
+        this.stats = stats;  // Keep the passed stats
+        this.gameId = 0;
+        this.inTestingMode = false;
+    
+        for (int i = 0; i < 3; i++) {
+            rounds.add(new Round(players, wordFilePath, stakeFilePath, scanner));
+        }
+    }
+
+    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats, WordList wordlist, Scanner scanner) throws IOException {
+        this.players = players;
+        this.scanner = scanner;
         this.rounds = new ArrayList<>();
         this.currentRoundIndex = 0;
         this.isGameActive = true;
         this.stats = stats;  // Keep the passed stats
         this.gameId = 0;
+        this.inTestingMode = false;
     
         for (int i = 0; i < 3; i++) {
-            rounds.add(new Round(players, wordFilePath, stakeFilePath));//error with this function
+            rounds.add(new Round(players, wordlist, stakeFilePath, scanner));//error with this function
         }
+    }
+
+    public void setTestingMode(boolean inTestingMode) {
+        this.inTestingMode = inTestingMode;
     }
 
     public List<Player> getPlayers() {
@@ -55,21 +79,31 @@ public class Game {
             System.err.println("Received null event");
             return;
         }
-        
+    
         String action = event.getAction();
         if (action == null) {
             System.err.println("Event action is null");
             return;
         }
+
+        Round currentRound = rounds.get(currentRoundIndex);
+        Player currentPlayer = currentRound.getCurrentPlayer();
     
         switch (action) {
-            case "PLAY":
-                playRound();
+            case "BUY_VOWEL":
+                currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
+                break;
+            case "SELECT_CONSONANT":
+                currentRound.selectConsonant(currentPlayer, event.getValue().charAt(0));
+                break;
+            case "SOLVE_PUZZLE":
+                currentRound.solvePuzzle(currentPlayer, event.getValue());
                 break;
             default:
                 System.out.println("Unknown action: " + action);
         }
     }
+    
 
     public void startGame() {
         if (players.size() < 2) {
@@ -78,29 +112,22 @@ public class Game {
             return;
         }
         System.out.println("Game started with " + players.size() + " players.");
-        isGameActive = true;
-        for(int i =0; i < 3; i++)
-        {
-           startNextRound(); 
-            if(i ==2)
-            {
-            isGameActive = false;
-            determineWinner();
-            System.out.println("All round complete");
 
-        }
-    }
+        if (!inTestingMode) {
+            for(int i =0; i < 3; i++){
+                startNextRound();
+                System.out.println("back in game"); 
+                if(i == 2){
+                    isGameActive = false;
+                    determineWinner();
+                    System.out.println("All round complete");
+                }
+            }
+        }  
         //startNextRound();
     }
 
     public void startNextRound() {
-        //if (currentRoundIndex >= rounds.size()) {
-            //System.out.println("All rounds completed.");
-            //isGameActive = false;
-            //determineWinner();
-          //  return;
-        //}
-
         Round currentRound = rounds.get(currentRoundIndex);
         currentRound.startRound();
         currentRoundIndex++;
@@ -112,7 +139,7 @@ public class Game {
             return;
         }
 
-        Round currentRound = rounds.get(currentRoundIndex - 1);
+        Round currentRound = rounds.get(currentRoundIndex);
         while (currentRound.isRoundActive()) {
             currentRound.nextTurn();
         }
@@ -175,11 +202,3 @@ public class Game {
         return isGameActive;
     }
 }
-
-
-
-
-
-
-
-
