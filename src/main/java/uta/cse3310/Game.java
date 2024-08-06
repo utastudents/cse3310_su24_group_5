@@ -125,6 +125,7 @@ public class Game {
                 System.out.println("back in game");
                 isGameActive = true;
                 startNextRound();
+                System.out.println("finished start next round method");
                  
                 if(i == 2){
                     isGameActive = false;
