@@ -8,7 +8,7 @@ public class GameTimer {
     private long startTime;
     private long elapsedTime;
     private boolean isRunning;
-    private TimerTask timerTask;
+    //private TimerTask timerTask;
 
     public GameTimer() {
         this.timer = new Timer();

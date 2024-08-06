@@ -5,11 +5,24 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class WordList {
 
     private ArrayList<String> randomwords = new ArrayList<>();
+    private List<String> words;
+
+    public WordList() {
+    }
+    
+    public WordList(List<String> testwords) {
+        this.words = testwords;
+    }
+
+    public List<String> getWords() {
+        return words;
+    }
 
     public void printwords() {
         for (String word : randomwords) {
