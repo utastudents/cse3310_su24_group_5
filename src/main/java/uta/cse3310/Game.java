@@ -18,6 +18,7 @@ public class Game {
     private Statistics stats;
     private int gameId;
     private boolean inTestingMode;
+    public boolean playerActionComplete;
     private transient Scanner scanner;  // Marked as transient
 
     public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats, Scanner scanner) throws IOException {
@@ -29,6 +30,7 @@ public class Game {
         this.stats = stats;  // Keep the passed stats
         this.gameId = 0;
         this.inTestingMode = false;
+        this.playerActionComplete = false;
     
         for (int i = 0; i < 3; i++) {
             rounds.add(new Round(players, wordFilePath, stakeFilePath, scanner));
@@ -98,6 +100,7 @@ public class Game {
         switch (action) {
             case "BUY_VOWEL":
                 currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
+                playerActionComplete = true;
                 break;
             case "SELECT_CONSONANT":
                 currentRound.selectConsonant(currentPlayer, event.getValue().charAt(0));
@@ -108,6 +111,8 @@ public class Game {
             default:
                 System.out.println("Unknown action: " + action);
         }
+
+        //currentRound.playerActionTaken();
 
         // Debugging log
         System.out.println("Updated game state: " + new Gson().toJson(this));
@@ -179,6 +184,10 @@ public class Game {
 
     public int getCurrentRoundIndex() {
         return currentRoundIndex;
+    }
+
+    public Round getCurrentRound() {
+        return rounds.get(currentRoundIndex);
     }
 
     public void determineWinner() {

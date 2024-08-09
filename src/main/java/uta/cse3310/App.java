@@ -87,9 +87,9 @@ public class App extends WebSocketServer {
         System.out.println("< " + jsonString);
         broadcastToGame(game, jsonString);  // Broadcast to the specific game
 
-        /*if (game.getPlayers().size() == 2) {
+        if (game.getPlayers().size() == 2) {
             game.startGame();
-        }*/
+        }
     }
 
     @Override
@@ -116,6 +116,10 @@ public class App extends WebSocketServer {
             String jsonString = gson.toJson(game);
             System.out.println("> " + jsonString);
             broadcastToGame(game, jsonString);  // Broadcast to the specific game
+            if (game.playerActionComplete) {
+                game.getCurrentRound().playerActionTaken();
+                game.playerActionComplete = false;
+            }
         }
     }
 

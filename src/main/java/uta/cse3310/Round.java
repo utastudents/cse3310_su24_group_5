@@ -14,7 +14,7 @@ public class Round {
     private int currentPlayerIndex;
     private List<Player> players;
     private boolean isRoundActive;
-    private static final int TURN_TIME_LIMIT = 100;
+    private static final int TURN_TIME_LIMIT = 1000000;
     private static final int VOWEL_COST = 50;
     private WordList wordlist = new WordList();
     private ArrayList<String> wordsforgame;
@@ -24,6 +24,8 @@ public class Round {
     private transient Scanner scanner;
     public boolean waitingForInput = false;
     private final Object turnLock = new Object();
+    public final Object broadcastLock = new Object();
+
 
     @SuppressWarnings("static-access")
     public Round(List<Player> players, String wordFilePath, String stakeFilePath, Scanner scanner) throws IOException {
@@ -111,7 +113,7 @@ public class Round {
             currentPlayer.deductScore(VOWEL_COST);
             currentPlayer.buyVowel(vowel);
             processGuess(currentPlayer, vowel);
-            playerActionTaken(); // Notify the waiting thread
+            //playerActionTaken(); // Notify the waiting thread
         } else {
             System.out.println("Invalid vowel or not enough points or already bought. Try again.");
         }
@@ -156,7 +158,7 @@ public class Round {
             if (correctguesses.equals(lettersinword)) {
                 System.out.println("Word guessed correctly! Round over.");
                 isRoundActive = false;
-                playerActionTaken(); // Notify the waiting thread
+                //playerActionTaken(); // Notify the waiting thread
             } else {
                 currentPlayer.getTimer().reset();
                 //nextTurn();
