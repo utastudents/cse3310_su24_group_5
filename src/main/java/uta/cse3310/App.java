@@ -87,9 +87,9 @@ public class App extends WebSocketServer {
         System.out.println("< " + jsonString);
         broadcastToGame(game, jsonString);  // Broadcast to the specific game
 
-        if (game.getPlayers().size() == 2) {
+        /*if (game.getPlayers().size() == 2) {
             game.startGame();
-        }
+        }*/
     }
 
     @Override
@@ -137,6 +137,7 @@ public class App extends WebSocketServer {
     }
 
     private void broadcastToGame(Game game, String message) {
+        System.out.println("Broadcasting to game: " + game.getGameId());
         for (WebSocket conn : getConnections()) { // Changed from connections() to getConnections()
             if (conn.getAttachment() == game) {
                 conn.send(message);

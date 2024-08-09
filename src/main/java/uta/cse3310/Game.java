@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 import org.java_websocket.WebSocket;
 
+import com.google.gson.Gson;
+
 public class Game {
     private static final int MAX_PLAYERS = 4;
     private List<Player> players;
@@ -83,7 +85,7 @@ public class Game {
             System.err.println("Received null event");
             return;
         }
-    
+
         String action = event.getAction();
         if (action == null) {
             System.err.println("Event action is null");
@@ -92,24 +94,26 @@ public class Game {
 
         Round currentRound = rounds.get(currentRoundIndex);
         Player currentPlayer = currentRound.getCurrentPlayer();
-    
+
         switch (action) {
             case "BUY_VOWEL":
                 currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
-                currentRound.waitingForInput = false;
                 break;
             case "SELECT_CONSONANT":
                 currentRound.selectConsonant(currentPlayer, event.getValue().charAt(0));
-                currentRound.waitingForInput = false;
                 break;
             case "SOLVE_PUZZLE":
                 currentRound.solvePuzzle(currentPlayer, event.getValue());
-                currentRound.waitingForInput = false;
                 break;
             default:
                 System.out.println("Unknown action: " + action);
         }
+
+        // Debugging log
+        System.out.println("Updated game state: " + new Gson().toJson(this));
     }
+
+    
     
 
     public void startGame() {
