@@ -54,7 +54,8 @@ public class App extends WebSocketServer {
         Game game = null;
 
         for (Game g : activeGames) {
-            if (g.getPlayers().size() < 4) { // Assuming a maximum of 4 players per game
+            // Find an open game that hasn't started and is not full
+            if (g.getPlayers().size() < 4 && !g.isGameActive()) {
                 game = g;
                 System.out.println("Found a match");
                 break;
@@ -64,8 +65,9 @@ public class App extends WebSocketServer {
         Player newPlayer = new Player("Player" + connectionId, PlayerType.HUMAN);
 
         if (game == null) {
+            // No open game available, create a new one
             List<Player> players = new ArrayList<>();
-            players.add(newPlayer); // Initialize at least one player
+            players.add(newPlayer); // Initialize with the new player
 
             try {
                 game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt",
@@ -79,6 +81,13 @@ public class App extends WebSocketServer {
 
             System.out.println("Creating a new Game");
         } else {
+            // Ensure player is not rejoining a previous game
+            if (game.hasPlayer(newPlayer)) {
+                System.out.println("Player already in the game, cannot rejoin.");
+                conn.close();
+                return;
+            }
+
             game.addPlayer(newPlayer);
             System.out.println("Joining an existing game");
         }
@@ -96,11 +105,11 @@ public class App extends WebSocketServer {
         System.out.println("> " + gameJson);
 
         gameJson = gson.toJson(game);
-        // System.out.println("< " + gameJson);
         broadcastToGame(game, gameJson); // Broadcast to the specific game
 
-        if (game.getPlayers().size() == 2) {
-            game.startGame();
+        if (game.getPlayers().size() >= 2 && !game.isGameActive()) {
+            // Enable the start button in the frontend if there are at least 2 players
+            broadcastStartButtonState(game, true);
         }
     }
 
@@ -125,19 +134,19 @@ public class App extends WebSocketServer {
         if (game != null) {
             Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
 
-            //if (!event.getPlayerId().equals(currentPlayer.getId())) {
-              //  System.out.println("It's not this player's turn.");
-                //return; // Ignore the action if it's not the current player's turn
-            //}
+            if (!event.getPlayerId().equals(currentPlayer.getId())) {
+                System.out.println("It's not this player's turn.");
+                return; // Ignore the action if it's not the current player's turn
+            }
 
-            //System.out.println("Received message from player ID: " + event.getPlayerId() + " with action: " + event.getAction());
-            
+            System.out.println("Received message from player ID: " + event.getPlayerId() + " with action: " + event.getAction());
+
             game.update(event);
-            
+
             // After processing the input, determine if the turn should continue or advance
             if (!game.getCurrentRound().isRoundActive()) {
                 game.moveToNextRoundOrEndGame();
-            } else if (!game.correctGuess){
+            } else if (!game.correctGuess) {
                 // Advance to the next turn
                 game.getCurrentRound().advanceTurn();
             }
@@ -147,8 +156,8 @@ public class App extends WebSocketServer {
         } else {
             System.out.println("No game attached to the WebSocket connection.");
         }
-        //System.out.println("Finished onMessage for player ID: " + event.getPlayerId());
-          
+        System.out.println("Finished onMessage for player ID: " + event.getPlayerId());
+
     }
 
     @Override
@@ -166,6 +175,11 @@ public class App extends WebSocketServer {
         setConnectionLostTimeout(0);
         stats = new Statistics();
         System.out.println("WebSocket server started successfully");
+    }
+
+    private void broadcastStartButtonState(Game game, boolean enabled) {
+        String message = "{ \"type\": \"START_BUTTON_STATE\", \"enabled\": " + enabled + " }";
+        broadcastToGame(game, message);
     }
 
     private void broadcastToGame(Game game, String message) {

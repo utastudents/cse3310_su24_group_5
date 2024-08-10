@@ -101,6 +101,10 @@ public class Game {
         
     
         switch (action) {
+            case "START_GAME":
+                startGame();
+                correctGuess = true;
+                break;
             case "BUY_VOWEL":
                 correctGuess = currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
                 break;
@@ -129,26 +133,17 @@ public class Game {
     public void startGame() {
         if (players.size() < 2) {
             System.out.println("Cannot start game: not enough players.");
-            isGameActive = false;
             return;
         }
+    
+        if (isGameActive) {
+            System.out.println("Game is already active.");
+            return;
+        }
+    
         System.out.println("Game started with " + players.size() + " players.");
         isGameActive = true;
 
-        /* 
-        if (!inTestingMode) {
-            for(int i =0; i < 3; i++){
-                System.out.println("back in game");
-                startNextRound();
-                System.out.println("finished start next round method");
-                 
-                if(i == 2){
-                    isGameActive = false;
-                    determineWinner();
-                    System.out.println("All round complete");
-                }
-            }
-        }  */
         startNextRound();
     }
 
@@ -241,5 +236,9 @@ public class Game {
 
     public boolean isGameActive() {
         return isGameActive;
+    }
+
+    public boolean hasPlayer(Player player) {
+        return players.stream().anyMatch(p -> p.getId().equals(player.getId()));
     }
 }
