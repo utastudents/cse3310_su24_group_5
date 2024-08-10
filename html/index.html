@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +13,18 @@
             align-items: center;
             margin: 20px;
         }
+
         .game-board {
             display: grid;
             grid-template-columns: repeat(7, 40px);
             gap: 5px;
             margin-bottom: 20px;
         }
+
         .black-cell {
             background-color: black;
         }
+
         .game-board div {
             width: 40px;
             height: 40px;
@@ -29,6 +33,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .info-section {
             display: flex;
             justify-content: space-between;
@@ -36,29 +41,40 @@
             max-width: 600px;
             margin-bottom: 20px;
         }
-        .lobby-leaderboard, .current-game {
+
+        .lobby-leaderboard,
+        .current-game {
             border: 1px solid #000;
             padding: 10px;
         }
+
         .current-game {
             flex: 1;
             margin-left: 10px;
         }
-        .leaderboard-table, .score-table {
+
+        .leaderboard-table,
+        .score-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .leaderboard-table th, .leaderboard-table td, .score-table th, .score-table td {
+
+        .leaderboard-table th,
+        .leaderboard-table td,
+        .score-table th,
+        .score-table td {
             border: 1px solid #000;
             padding: 5px;
             text-align: center;
         }
+
         .actions {
             text-align: center;
             margin-top: 20px;
         }
     </style>
 </head>
+
 <body>
     <h1>Turn of Destiny</h1>
 
@@ -66,22 +82,27 @@
         <div class="lobby-leaderboard">
             <h2>Lobby Leaderboard</h2>
             <table class="leaderboard-table" id="leaderboard-table">
-                <tr><th>Rank</th><th>User</th><th>Score</th></tr>
-            </table> <!--leaderboard here -->
+                <tr>
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th>Score</th>
+                </tr>
+            </table>
         </div>
 
         <div class="current-game">
             <h2>Current Game</h2>
             <p id="category">Category: Games</p>
-            <div class="game-board" id="game-board"></div> <!--board here -->
+            <div class="game-board" id="game-board"></div>
             <p id="guess">Guess: </p>
             <p id="timer">Timer: </p>
             <p id="stake">Stake: </p>
             <h3>Scores</h3>
-            <table class="score-table" id="score-table"></table> <!--table here -->
+            <table class="score-table" id="score-table"></table>
             <p id="status">Status: </p>
             <p id="round">Round: </p>
             <p id="winner">Winner: </p>
+            <p id="currentPlayer">Current Player: </p> <!-- Display current player -->
         </div>
     </div>
 
@@ -93,9 +114,12 @@
         <input type="text" id="solutionInput" placeholder="Enter solution">
         <button id="solvePuzzleButton">Solve Puzzle</button>
     </div>
-    
+
+    <button id="startGameButton" disabled>Start Game</button> <!-- Start button -->
+
     <script>
         let socket;
+        let playerId = null; // Initialize the playerId variable
         const gameBoard = document.getElementById('game-board');
         const guessDisplay = document.getElementById('guess');
         const timerDisplay = document.getElementById('timer');
@@ -104,105 +128,171 @@
         const statusDisplay = document.getElementById('status');
         const roundDisplay = document.getElementById('round');
         const winnerDisplay = document.getElementById('winner');
-    
-        //const joinButton = document.getElementById('joinButton');
-        const buyVowelButton = document.getElementById('buyVowelButton');
-        const selectConsonantButton = document.getElementById('selectConsonantButton');
-        const solvePuzzleButton = document.getElementById('solvePuzzleButton');
-
+        const currentPlayerDisplay = document.getElementById('currentPlayer'); // For current player indicator
         const vowelInput = document.getElementById('vowelInput');
         const consonantInput = document.getElementById('consonantInput');
         const solutionInput = document.getElementById('solutionInput');
-    
+        const buyVowelButton = document.getElementById('buyVowelButton');
+        const selectConsonantButton = document.getElementById('selectConsonantButton');
+        const solvePuzzleButton = document.getElementById('solvePuzzleButton');
+        const startGameButton = document.getElementById('startGameButton'); // Start button reference
+
         function connectWebSocket() {
             socket = new WebSocket('ws://localhost:9105');
-            socket.onopen = function() {
+            socket.onopen = function () {
                 console.log('WebSocket connection established');
-                joinGame();
             };
-            socket.onmessage = function(event) {
-                const message = JSON.parse(event.data);
-                console.log('Message from server: ', message);
-                updateGameState(message);
+            socket.onmessage = function (event) {
+                try {
+                    const message = JSON.parse(event.data);
+                    console.log('Message from server: ', message);
+
+                    // Handle the TIMER_UPDATE message
+                    if (message.type === 'TIMER_UPDATE') {
+                        updateTimerDisplay(message.remainingTime);
+                        return;
+                    }
+
+                    // Handle enabling/disabling the start button
+                    if (message.type === 'START_BUTTON_STATE') {
+                        startGameButton.disabled = !message.enabled;
+                        return;
+                    }
+
+                    if (typeof message === 'string') {
+                        playerId = message;
+                        console.log('Assigned playerId: ', playerId);
+                        return;
+                    }
+
+                    if (message.playerType === 'NOPLAYER') {
+                        console.log("Received NOPLAYER message. Ignoring for game state update.");
+                        return;
+                    }
+
+                    if (message.players && message.rounds) {
+                        updateGameState(message);
+                    } else {
+                        console.warn('Invalid game state message received:', message);
+                    }
+                } catch (error) {
+                    console.error('Error processing message: ', error);
+                    console.error('Message content: ', event.data);
+                }
             };
-            socket.onclose = function() {
+            socket.onclose = function () {
                 console.log('WebSocket connection closed');
             };
-            socket.onerror = function(error) {
+            socket.onerror = function (error) {
                 console.error('WebSocket error: ', error);
             };
         }
-    
-        /*function joinGame() {
-            const message = { action: 'join' };
-            socket.send(JSON.stringify(message));
-        }*/
-    
-        function updateGameState(gameState) {
-            //Update board
-            gameBoard.innerHTML = '';
-            gameState.rounds[gameState.currentRoundIndex].word.wordsforgame.forEach(word => {
-                word.split('').forEach(letter => {
-                    const cell = document.createElement('div');
-                    cell.textContent = gameState.rounds[gameState.currentRoundIndex].correctguesses.includes(letter) ? letter : '_';
-                    gameBoard.appendChild(cell);
-                });
-            });
-    
-            //Update UI
-            guessDisplay.textContent = 'Guess: ' + (gameState.rounds[gameState.currentRoundIndex].guess || '');
-            timerDisplay.textContent = 'Timer: ' + (gameState.rounds[gameState.currentRoundIndex].timer || '');
-            stakeDisplay.textContent = 'Stake: ' + (gameState.rounds[gameState.currentRoundIndex].stake.currentStake || '');
-            statusDisplay.textContent = 'Status: ' + (gameState.isGameActive ? 'active' : 'closed');
-            roundDisplay.textContent = 'Round: ' + (gameState.currentRoundIndex + 1) + '/' + gameState.rounds.length;
-            winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : '');
-    
-            //Update score table
-            scoreTable.innerHTML = '';
-            gameState.players.forEach(player => {
-                const row = document.createElement('tr');
-                const nameCell = document.createElement('td');
-                const scoreCell = document.createElement('td');
-                nameCell.textContent = player.name;
-                scoreCell.textContent = player.score;
-                row.appendChild(nameCell);
-                row.appendChild(scoreCell);
-                scoreTable.appendChild(row);
-            });
-    
-            // Enable or disable buttons if less than 2 players
-            const buttonsEnabled = gameState.players.length >= 2;
-            buyVowelButton.disabled = !buttonsEnabled;
-            selectConsonantButton.disabled = !buttonsEnabled;
-            solvePuzzleButton.disabled = !buttonsEnabled;
+
+        function updateTimerDisplay(remainingTime) {
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = 'Timer: ' + remainingTime + ' seconds';
         }
-    
-        //joinButton.addEventListener('click', joinGame);
+
+        function updateGameState(gameState) {
+            try {
+                console.log('Updating game state:', gameState);
+                if (!gameState || !gameState.rounds || !gameState.rounds[gameState.currentRoundIndex]) {
+                    throw new Error('Invalid game state structure');
+                }
+
+                const currentRound = gameState.rounds[gameState.currentRoundIndex];
+                const currentPlayer = currentRound.players[currentRound.currentPlayerIndex];
+                const correctGuesses = currentRound.correctguesses || [];
+                const wordsForGame = currentRound.word.wordsforgame || [];
+
+                console.log('Correct Guesses:', correctGuesses);
+                console.log('Words for game:', wordsForGame);
+
+                gameBoard.innerHTML = '';
+                wordsForGame.forEach(word => {
+                    word.split('').forEach(letter => {
+                        const cell = document.createElement('div');
+                        if (correctGuesses.includes(letter)) {
+                            console.log('Displaying letter:', letter);
+                            cell.textContent = letter;
+                        } else {
+                            cell.textContent = '_';
+                        }
+                        gameBoard.appendChild(cell);
+                    });
+                    const spacer = document.createElement('div');
+                    spacer.style.width = '100%';
+                    gameBoard.appendChild(spacer);
+                });
+
+                guessDisplay.textContent = 'Guess: ' + (currentRound.guess || '');
+                timerDisplay.textContent = 'Timer: ' + (currentRound.timer || '');
+                stakeDisplay.textContent = 'Stake: ' + (currentRound.stake.currentStake || '');
+                statusDisplay.textContent = 'Status: ' + (gameState.isGameActive ? 'Closed' : 'Open');
+                roundDisplay.textContent = 'Round: ' + (gameState.currentRoundIndex + 1) + '/' + gameState.rounds.length;
+                winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : '');
+                currentPlayerDisplay.textContent = 'Current Player: ' + (gameState.players.find(p => p.name === currentPlayer.name).name);
+
+                scoreTable.innerHTML = '';
+                gameState.players.forEach(player => {
+                    const row = document.createElement('tr');
+                    const nameCell = document.createElement('td');
+                    const scoreCell = document.createElement('td');
+                    nameCell.textContent = player.name;
+                    scoreCell.textContent = player.score;
+                    row.appendChild(nameCell);
+                    row.appendChild(scoreCell);
+                    scoreTable.appendChild(row);
+                });
+
+                const buttonsEnabled = gameState.players.length >= 2;
+                buyVowelButton.disabled = !buttonsEnabled || currentPlayer.id !== playerId;
+                selectConsonantButton.disabled = !buttonsEnabled || currentPlayer.id !== playerId;
+                solvePuzzleButton.disabled = !buttonsEnabled || currentPlayer.id !== playerId;
+
+                // Disable the start button if the game is active
+                startGameButton.disabled = gameState.isGameActive || !buttonsEnabled;
+
+            } catch (error) {
+                console.error('Error updating game state: ', error);
+            }
+        }
+
+        startGameButton.addEventListener('click', () => {
+            const message = { action: 'START_GAME', playerId: playerId };
+            socket.send(JSON.stringify(message));
+            startGameButton.disabled = true; // Disable after starting
+        });
+
         buyVowelButton.addEventListener('click', () => {
             const vowel = vowelInput.value.trim().toLowerCase();
             if (vowel) {
-                const message = { action: 'BUY_VOWEL', value: vowel };
+                const message = { action: 'BUY_VOWEL', value: vowel, playerId: playerId };
                 socket.send(JSON.stringify(message));
+                console.log('Sending BUY_VOWEL message:', message);
             }
         });
+
         selectConsonantButton.addEventListener('click', () => {
             const consonant = consonantInput.value.trim().toLowerCase();
             if (consonant) {
-                const message = { action: 'SELECT_CONSONANT', value: consonant };
+                const message = { action: 'SELECT_CONSONANT', value: consonant, playerId: playerId };
                 socket.send(JSON.stringify(message));
+                console.log('Sending SELECT_CONSONANT message:', message);
             }
         });
+
         solvePuzzleButton.addEventListener('click', () => {
             const solution = solutionInput.value.trim().toLowerCase();
             if (solution) {
-                const message = { action: 'SOLVE_PUZZLE', value: solution };
+                const message = { action: 'SOLVE_PUZZLE', value: solution, playerId: playerId };
                 socket.send(JSON.stringify(message));
+                console.log('Sending SOLVE_PUZZLE message:', message);
             }
         });
-    
-        // Connect to WebSocket when the page loads
+
         window.onload = connectWebSocket;
     </script>
-    
 </body>
+
 </html>
