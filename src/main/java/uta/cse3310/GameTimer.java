@@ -4,14 +4,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class GameTimer {
-    private transient Timer timer; 
+    private transient Timer timer;
     private long startTime;
     private long elapsedTime;
     private boolean isRunning;
-    //private TimerTask timerTask;
+    private final long timeLimit;
 
-    public GameTimer() {
+    public GameTimer(long timeLimit) {
         this.timer = new Timer();
+        this.timeLimit = timeLimit; // Time limit in milliseconds
         this.elapsedTime = 0;
         this.isRunning = false;
     }
@@ -22,15 +23,18 @@ public class GameTimer {
         }
         this.startTime = System.currentTimeMillis();
         this.isRunning = true;
-        
-        // Create a new TimerTask instance each time the timer is started
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 elapsedTime = System.currentTimeMillis() - startTime;
+                if (getRemainingTime() <= 0) {
+                    stop();
+                    // Handle timer expiration (e.g., advance the turn)
+                }
             }
         };
-        
+
         timer.scheduleAtFixedRate(timerTask, 0, 1000); // Update elapsed time every second
     }
 
@@ -51,7 +55,11 @@ public class GameTimer {
     }
 
     public long getElapsedTime() {
-        return elapsedTime / 1000; // Return elapsed time in seconds
+        return elapsedTime; // Elapsed time in milliseconds
+    }
+
+    public long getRemainingTime() {
+        return timeLimit - getElapsedTime(); // Remaining time in milliseconds
     }
 
     public boolean isRunning() {

@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
@@ -21,6 +25,7 @@ public class App extends WebSocketServer {
     private Vector<Game> activeGames = new Vector<>();
     private int gameId = 1;
     private int connectionId = 0;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Statistics stats;
     private HttpServer httpServer;
 
@@ -49,43 +54,50 @@ public class App extends WebSocketServer {
         Game game = null;
 
         for (Game g : activeGames) {
-            if (g.getPlayers().size() < 4) {  // Assuming a maximum of 4 players per game
+            if (g.getPlayers().size() < 4) { // Assuming a maximum of 4 players per game
                 game = g;
                 System.out.println("Found a match");
                 break;
             }
         }
 
+        Player newPlayer = new Player("Player" + connectionId, PlayerType.HUMAN);
+
         if (game == null) {
             List<Player> players = new ArrayList<>();
-            players.add(new Player("Player" + connectionId, PlayerType.HUMAN));  // Initialize at least one player
+            players.add(newPlayer); // Initialize at least one player
+
             try {
-                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt", new Statistics(), new Scanner(System.in));
+                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt",
+                        new Statistics());
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
             }
             game.setGameId(gameId++);
             activeGames.add(game);
-            
+
             System.out.println("Creating a new Game");
         } else {
-            game.addPlayer(new Player("Player" + connectionId, PlayerType.HUMAN));
+            game.addPlayer(newPlayer);
             System.out.println("Joining an existing game");
         }
 
-        
+        conn.setAttachment(game); // Attach the game to the connection
 
-
-        conn.setAttachment(game);  // Attach the game to the connection
         Gson gson = new Gson();
-        String jsonString = gson.toJson(event);
-        conn.send(jsonString);
-        System.out.println("> " + jsonString);
 
-        jsonString = gson.toJson(game);
-        System.out.println("< " + jsonString);
-        broadcastToGame(game, jsonString);  // Broadcast to the specific game
+        String playerJson = gson.toJson(newPlayer.getId());
+        conn.send(playerJson);
+        System.out.println("> Player ID" + playerJson);
+
+        String gameJson = gson.toJson(event);
+        conn.send(gameJson);
+        System.out.println("> " + gameJson);
+
+        gameJson = gson.toJson(game);
+        // System.out.println("< " + gameJson);
+        broadcastToGame(game, gameJson); // Broadcast to the specific game
 
         if (game.getPlayers().size() == 2) {
             game.startGame();
@@ -106,21 +118,37 @@ public class App extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("< " + message);
         Gson gson = new GsonBuilder().create();
         UserEvent event = gson.fromJson(message, UserEvent.class);
 
         Game game = conn.getAttachment();
         if (game != null) {
-            game.update(event);
-            String jsonString = gson.toJson(game);
-            System.out.println("> " + jsonString);
-            broadcastToGame(game, jsonString);  // Broadcast to the specific game
-            if (game.playerActionComplete) {
-                game.getCurrentRound().playerActionTaken();
-                game.playerActionComplete = false;
+            Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
+
+            if (!event.getPlayerId().equals(currentPlayer.getId())) {
+                System.out.println("It's not this player's turn.");
+                return; // Ignore the action if it's not the current player's turn
             }
+
+            System.out.println("Received message from player ID: " + event.getPlayerId() + " with action: " + event.getAction());
+            
+            game.update(event);
+            
+            // After processing the input, determine if the turn should continue or advance
+            if (!game.getCurrentRound().isRoundActive()) {
+                game.moveToNextRoundOrEndGame();
+            } else if (!game.correctGuess){
+                // Advance to the next turn
+                game.getCurrentRound().advanceTurn();
+            }
+
+            String jsonString = gson.toJson(game);
+            broadcastToGame(game, jsonString);
+        } else {
+            System.out.println("No game attached to the WebSocket connection.");
         }
+        System.out.println("Finished onMessage for player ID: " + event.getPlayerId());
+          
     }
 
     @Override

@@ -12,19 +12,20 @@ import com.google.gson.Gson;
 public class Game {
     private static final int MAX_PLAYERS = 4;
     private List<Player> players;
-    private List<Round> rounds;
+    List<Round> rounds;
     private int currentRoundIndex;
     public boolean isGameActive;
     private Statistics stats;
     private int gameId;
     private boolean inTestingMode;
     public boolean playerActionComplete;
-    private transient Scanner scanner;  // Marked as transient
+    //private transient Scanner scanner;  // Marked as transient
+    boolean correctGuess;
+    //private TurnStartListener turnStartListener;
 
-    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats, Scanner scanner) throws IOException {
+    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats) throws IOException {
         this.players = players;
         this.rounds = new ArrayList<>();
-        this.scanner = scanner;
         this.currentRoundIndex = 0;
         this.isGameActive = false;
         this.stats = stats;  // Keep the passed stats
@@ -33,23 +34,20 @@ public class Game {
         this.playerActionComplete = false;
     
         for (int i = 0; i < 3; i++) {
-            rounds.add(new Round(players, wordFilePath, stakeFilePath, scanner));
+            rounds.add(new Round(players, wordFilePath, stakeFilePath));
         }
     }
 
-    public Game(List<Player> players, String wordFilePath, String stakeFilePath, Statistics stats, WordList wordlist, Scanner scanner) throws IOException {
+    public Game(List<Player> players, List<Round> rounds, int currentRoundIndex, boolean isGameActive, int gameId, boolean playerActionComplete, boolean correctGuess) {
         this.players = players;
-        this.scanner = scanner;
-        this.rounds = new ArrayList<>();
-        this.currentRoundIndex = 0;
-        this.isGameActive = true;
-        this.stats = stats;  // Keep the passed stats
-        this.gameId = 0;
-        this.inTestingMode = false;
-    
-        for (int i = 0; i < 3; i++) {
-            rounds.add(new Round(players, wordlist, stakeFilePath, scanner));//error with this function
-        }
+        this.rounds = rounds;
+        this.currentRoundIndex = currentRoundIndex;
+        this.isGameActive = isGameActive;
+        this.gameId = gameId;
+        this.playerActionComplete = playerActionComplete;
+        this.correctGuess = correctGuess;
+        // Initialize transient fields or any other required fields as needed
+        //this.scanner = new Scanner(System.in);  // or set it to null if it should be handled differently
     }
 
     public void setTestingMode(boolean inTestingMode) {
@@ -58,6 +56,10 @@ public class Game {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<Round> getRounds() {
+        return rounds;
     }
 
     public void setGameId(int gameId) {
@@ -87,36 +89,39 @@ public class Game {
             System.err.println("Received null event");
             return;
         }
-
+    
         String action = event.getAction();
         if (action == null) {
             System.err.println("Event action is null");
             return;
         }
-
+    
         Round currentRound = rounds.get(currentRoundIndex);
         Player currentPlayer = currentRound.getCurrentPlayer();
-
+        
+    
         switch (action) {
             case "BUY_VOWEL":
-                currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
-                playerActionComplete = true;
+                correctGuess = currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
                 break;
             case "SELECT_CONSONANT":
-                currentRound.selectConsonant(currentPlayer, event.getValue().charAt(0));
+                correctGuess = currentRound.selectConsonant(currentPlayer, event.getValue().charAt(0));
+                System.out.println("Consonant selected by " + currentPlayer.getName());
                 break;
             case "SOLVE_PUZZLE":
-                currentRound.solvePuzzle(currentPlayer, event.getValue());
+                correctGuess = currentRound.solvePuzzle(currentPlayer, event.getValue());
                 break;
             default:
                 System.out.println("Unknown action: " + action);
         }
 
-        //currentRound.playerActionTaken();
-
-        // Debugging log
         System.out.println("Updated game state: " + new Gson().toJson(this));
+    
+        if (playerActionComplete) {
+            System.out.println("Player " + currentPlayer.getName() + " action complete.");
+        }
     }
+    
 
     
     
@@ -128,11 +133,12 @@ public class Game {
             return;
         }
         System.out.println("Game started with " + players.size() + " players.");
+        isGameActive = true;
 
+        /* 
         if (!inTestingMode) {
             for(int i =0; i < 3; i++){
                 System.out.println("back in game");
-                isGameActive = true;
                 startNextRound();
                 System.out.println("finished start next round method");
                  
@@ -142,14 +148,24 @@ public class Game {
                     System.out.println("All round complete");
                 }
             }
-        }  
-        //startNextRound();
+        }  */
+        startNextRound();
     }
 
-    public void startNextRound() {
+    public void moveToNextRoundOrEndGame() {
+        if (currentRoundIndex < rounds.size() - 1) {
+            System.out.println("Round is over. Moving to the next round.");
+            currentRoundIndex++; // Move to the next round
+            startNextRound(); // Start the next round
+        } else {
+            System.out.println("All rounds complete. Ending the game.");
+            endGame(determineWinner()); // End the game and declare the winner
+        }
+    }
+
+    public void startNextRound(){
         Round currentRound = rounds.get(currentRoundIndex);
         currentRound.startRound();
-        currentRoundIndex++;
     }
 
     public void playRound() {
@@ -190,7 +206,7 @@ public class Game {
         return rounds.get(currentRoundIndex);
     }
 
-    public void determineWinner() {
+    public Player determineWinner() {
         Player winner = null;
         int highestScore = 0;
         for (Player player : players) {
@@ -207,6 +223,8 @@ public class Game {
         } else {
             System.out.println("No winner determined.");
         }
+
+        return winner;
     }
 
     public void resetGame() {

@@ -14,11 +14,13 @@ public class Player {
     private List<Character> guessedConsonants;
     private PlayerType playerType;
 
+    private static final int TURN_TIME_LIMIT = 1000000;
+
     public Player(String name, PlayerType playerType) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.score = 1000;
-        this.timer = new GameTimer();
+        this.timer = new GameTimer(TURN_TIME_LIMIT);
         this.boughtVowels = new ArrayList<>();
         this.guessedConsonants = new ArrayList<>();
         this.playerType = playerType;
@@ -92,9 +94,3 @@ public class Player {
         this.playerType = playerType;
     }
 }
-
-
-
-
-
-
