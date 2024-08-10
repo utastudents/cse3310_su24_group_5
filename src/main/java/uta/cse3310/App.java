@@ -125,12 +125,12 @@ public class App extends WebSocketServer {
         if (game != null) {
             Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
 
-            if (!event.getPlayerId().equals(currentPlayer.getId())) {
-                System.out.println("It's not this player's turn.");
-                return; // Ignore the action if it's not the current player's turn
-            }
+            //if (!event.getPlayerId().equals(currentPlayer.getId())) {
+              //  System.out.println("It's not this player's turn.");
+                //return; // Ignore the action if it's not the current player's turn
+            //}
 
-            System.out.println("Received message from player ID: " + event.getPlayerId() + " with action: " + event.getAction());
+            //System.out.println("Received message from player ID: " + event.getPlayerId() + " with action: " + event.getAction());
             
             game.update(event);
             
@@ -147,7 +147,7 @@ public class App extends WebSocketServer {
         } else {
             System.out.println("No game attached to the WebSocket connection.");
         }
-        System.out.println("Finished onMessage for player ID: " + event.getPlayerId());
+        //System.out.println("Finished onMessage for player ID: " + event.getPlayerId());
           
     }
 
