@@ -70,7 +70,7 @@ public class App extends WebSocketServer {
             players.add(newPlayer); // Initialize with the new player
 
             try {
-                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stakes.txt",
+                game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stake.txt",
                         new Statistics());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -132,6 +132,17 @@ public class App extends WebSocketServer {
 
         Game game = conn.getAttachment();
         if (game != null) {
+            if ("START_GAME".equals(event.getAction())) {
+                if (!game.isGameActive() && game.getPlayers().size() >= 2) {
+                    game.startGame();
+                    String jsonString = gson.toJson(game);
+                    broadcastToGame(game, jsonString); // Broadcast the game state to all players
+                } else {
+                    System.out.println("Game cannot be started. Either it's already active or there aren't enough players.");
+                }
+                return;
+            }
+            
             Player currentPlayer = game.getCurrentRound().getCurrentPlayer();
 
             if (!event.getPlayerId().equals(currentPlayer.getId())) {

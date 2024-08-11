@@ -1,35 +1,70 @@
 package uta.cse3310;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Stake {
-    private String currentStake;
+    private List<String> stakes;
 
-    // Default constructor
-    public Stake() {
+    public Stake(String filePath) throws IOException {
+        this.stakes = new ArrayList<>();
+        loadStakes(filePath);
     }
 
-    // Constructor that accepts a string argument
-    public Stake(String currentStake) {
-        this.currentStake = currentStake;
+    private void loadStakes(String filePath) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                stakes.add(line.trim());
+            }
+        }
     }
 
-    public String getCurrentStake() {
-        return currentStake;
-    }
-
-    public void setCurrentStake(String currentStake) {
-        this.currentStake = currentStake;
+    public String getRandomStake() {
+        Random random = new Random();
+        return stakes.get(random.nextInt(stakes.size()));
     }
 
     public void reset() {
-        this.currentStake = null;  // Or any default value
+        this.stakes = null;  // Or any default value
     }
 
-    public int calculatePoints(char guessedLetter) {
-        // Placeholder for actual point calculation logic
-        // Implement your game logic here
-        return 10; // Example fixed value, replace with actual logic
+    public int calculatePoints(String stake, char guessedLetter) {
+        if (stake == null) {
+            System.err.println("Stake is null. Defaulting to 0 points.");
+            return 0;
+        }
+
+        switch (stake) {
+            case "Bankrupt":
+                return 0;
+            case "Lose Turn":
+                return 0;
+            case "Double Points":
+                return 2 * 10; // Double points, assuming base is 10
+            case "Half Points":
+                return 5; // Half points, assuming base is 10
+            case "Free Spin":
+            case "Extra Turn":
+                return 10; // Regular points
+            default:
+                try {
+                    return Integer.parseInt(stake);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid stake format: " + stake);
+                    return 0;
+                }
+        }
     }
 }
+
+
+
+
 
 
 

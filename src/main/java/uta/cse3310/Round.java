@@ -20,6 +20,7 @@ public class Round {
     private HashSet<Character> lettersinword;
     public boolean waitingForInput = false;
     private Player currentPlayer;
+    private String currentStake;
 
     @SuppressWarnings("static-access")
     public Round(List<Player> players, String wordFilePath, String stakeFilePath) throws IOException {
@@ -65,6 +66,9 @@ public class Round {
     
         currentPlayer = getCurrentPlayer();
         System.out.println("Current player: " + currentPlayer.getName() + " has " + TURN_TIME_LIMIT + " seconds to guess.");
+
+        // Set the current stake for this player's turn
+        currentStake = stake.getRandomStake(); // Initialize currentStake with a valid value
 
         // Start the player's timer
         currentPlayer.getTimer().reset();
@@ -122,12 +126,9 @@ public class Round {
 
         // if the guess is correct add points to player, add guessed letter, current player doesnt change (they get another turn)
         if (isCorrect == 1) {
-            System.out.println("Correct guess!");
-            int points = stake.calculatePoints(guessedLetter);
-            player.addScore(points);
+            int reward = calculateReward(guessedLetter);
+            player.addScore(reward);
             correctguesses.add(guessedLetter);
-            System.out.println("Player " + player.getName() + " awarded " + points + " points.");
-            System.out.println("\nCorrect guesses: " + correctguesses);
             
             //puzzle is solved
             if (correctguesses.equals(lettersinword)) {
@@ -163,6 +164,11 @@ public class Round {
         
     }
 
+    private int calculateReward(char guessedLetter) {
+        int multiplier = stake.calculatePoints(currentStake, guessedLetter);
+        return multiplier * (int) wordsforgame.stream().filter(word -> word.contains(String.valueOf(guessedLetter))).count();
+    }
+
     public void resetRound() throws IOException {
         this.stake.reset();
         this.currentPlayerIndex = 0;
@@ -175,6 +181,10 @@ public class Round {
 
     public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
+    }
+
+    public String getCurrentStake() {
+        return currentStake;
     }
 
     public ArrayList<String> getWordsForGame() {

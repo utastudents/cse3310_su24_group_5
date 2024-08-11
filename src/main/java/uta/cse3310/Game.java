@@ -101,10 +101,6 @@ public class Game {
         
     
         switch (action) {
-            case "START_GAME":
-                startGame();
-                correctGuess = true;
-                break;
             case "BUY_VOWEL":
                 correctGuess = currentRound.buyVowel(currentPlayer, event.getValue().charAt(0));
                 break;
