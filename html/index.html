@@ -72,11 +72,48 @@
             text-align: center;
             margin-top: 20px;
         }
+
+
+        .rules-section {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .rules-section h2 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .rules-section ul {
+            padding-left: 20px;
+        }
+
+        .rules-section li {
+            margin-bottom: 5px;
+        }
+
+
     </style>
 </head>
 
 <body>
     <h1>Turn of Destiny</h1>
+    <!-- Add the rules section here -->
+    <div class="rules-section">
+        <h2>Game Rules</h2>
+        <ul id="rules-list">
+            <li>Rule 0: You will automatically be put in the first avalible lobby.</li>
+            <li>Rule 1: If you are the first player in the lobby you must wait for game board to load before opening a new tab(player2).</li>
+            <li>Rule 2: When 2 players are in the lobby you can press start game.</li>
+            <li>Rule 3: If more than 4 people the remaining people will be put in another lobby.</li>
+            <li>Rule 4: If you want to start a second game or lobby the first lobby must be closed to start another lobby.</li>
+            <li>Rule 5: The round ends when the puzzle is solved or all leters are guessed</li>
+            <li>Rule 6: The game ends when all three rounds are over.</li>
+            <li>Rule 7: Dont worry about the lobbe leabderboard, you wont make it on their [insert evil Elon Musk laugh] .</li>
+        </ul>
+    </div>
 
     <div class="info-section">
         <div class="lobby-leaderboard">
@@ -233,7 +270,7 @@
                 stakeDisplay.textContent = 'Stake: ' + (currentRound.currentStake);
                 statusDisplay.textContent = 'Status: ' + (gameState.isGameActive ? 'Closed' : 'Open');
                 roundDisplay.textContent = 'Round: ' + (gameState.currentRoundIndex + 1) + '/' + gameState.rounds.length;
-                winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : '');
+                winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : 'No winner yet');
                 currentPlayerDisplay.textContent = 'Current Player: ' + (gameState.players.find(p => p.name === currentPlayer.name).name);
 
                 scoreTable.innerHTML = '';
