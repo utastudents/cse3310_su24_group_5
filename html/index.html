@@ -225,9 +225,12 @@
                     gameBoard.appendChild(spacer);
                 });
 
-                guessDisplay.textContent = 'Guess: ' + (currentRound.guess || '');
+                const currentStake = currentRound.currentStake;
+                document.getElementById('stake').textContent = 'Stake: ' + currentStake;
+
+                guessDisplay.textContent = 'Guessed Letters: ' + (currentRound.lettersguessed);
                 timerDisplay.textContent = 'Timer: ' + (currentRound.timer || '');
-                stakeDisplay.textContent = 'Stake: ' + (currentRound.stake.currentStake || '');
+                stakeDisplay.textContent = 'Stake: ' + (currentRound.currentStake);
                 statusDisplay.textContent = 'Status: ' + (gameState.isGameActive ? 'Closed' : 'Open');
                 roundDisplay.textContent = 'Round: ' + (gameState.currentRoundIndex + 1) + '/' + gameState.rounds.length;
                 winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : '');
@@ -245,7 +248,7 @@
                     scoreTable.appendChild(row);
                 });
 
-                const buttonsEnabled = gameState.players.length >= 2;
+                const buttonsEnabled = gameState.isGameActive && gameState.players.length >= 2;
                 buyVowelButton.disabled = !buttonsEnabled || currentPlayer.id !== playerId;
                 selectConsonantButton.disabled = !buttonsEnabled || currentPlayer.id !== playerId;
                 solvePuzzleButton.disabled = !buttonsEnabled || currentPlayer.id !== playerId;
