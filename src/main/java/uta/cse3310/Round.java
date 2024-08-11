@@ -121,6 +121,7 @@ public class Round {
 
     @SuppressWarnings("static-access")
     private boolean processGuess(Player player, char guessedLetter) {
+        
         int isCorrect = word.iscorrect(guessedLetter, lettersinword);
         lettersguessed.add(guessedLetter);
 
@@ -166,6 +167,8 @@ public class Round {
 
     private int calculateReward(char guessedLetter) {
         int multiplier = stake.calculatePoints(currentStake, guessedLetter);
+        //stake.reset();//ADDED<--------------------
+        currentStake = stake.getRandomStake();//ADDED<--------------------
         return multiplier * (int) wordsforgame.stream().filter(word -> word.contains(String.valueOf(guessedLetter))).count();
     }
 

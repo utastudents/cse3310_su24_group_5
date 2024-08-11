@@ -58,7 +58,7 @@ public class Stake {
                     System.err.println("Invalid stake format: " + stake);
                     return 0;
                 }
-        }
+        } 
     }
 }
 
