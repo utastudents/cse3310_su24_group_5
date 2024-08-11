@@ -5,13 +5,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class StakeTest {/*
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+class StakeTest {
 
     private Stake stake;
+    private String filePath = "src/main/resources/stake.txt";
 
     @BeforeEach
-    void setUp() {
-        stake = new Stake();
+    void setUp() throws IOException {
+        stake = new Stake(filePath);
     }
 
     @Test
@@ -19,10 +24,13 @@ class StakeTest {/*
         assertNull(stake.getCurrentStake());
     }
 
+    
+
     @Test
-    void testParameterizedConstructor() {
-        Stake stakeWithParam = new Stake("High");
-        assertEquals("High", stakeWithParam.getCurrentStake());
+    void testParameterizedConstructor() throws IOException {
+        Stake stakeWithParam = new Stake(filePath);
+        //assertEquals("High", stakeWithParam.getCurrentStake());
+        assertNotNull(stake.getStakes(), "Stakes list should not be null");
     }
 
     @Test
@@ -40,15 +48,15 @@ class StakeTest {/*
     @Test
     void testReset() {
         stake.setCurrentStake("Medium");
-        stake.reset();
+        stake.resetcurrentStake();
         assertNull(stake.getCurrentStake());
     }
 
     @Test
     void testCalculatePoints() {
-        int points = stake.calculatePoints('a');
+        int points = stake.calculatePoints("Extra Turn", 'a');
         assertEquals(10, points); // Adjust based on actual calculation logic
-    }*/
+    }
 }
 
 

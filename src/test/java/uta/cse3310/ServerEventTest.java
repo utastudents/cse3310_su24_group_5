@@ -3,7 +3,7 @@ package uta.cse3310;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ServerEventTest {/*
+class ServerEventTest {
 
     @Test
     void testServerEvent() {
@@ -11,6 +11,6 @@ class ServerEventTest {/*
 
         assertEquals(PlayerType.HUMAN, event.getPlayerType());
         assertEquals(1001, event.getGameId());
-    }*/
+    }
 }
 

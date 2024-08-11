@@ -9,10 +9,16 @@ import java.util.Random;
 
 public class Stake {
     private List<String> stakes;
+    private String currentStake; //<---------added
 
     public Stake(String filePath) throws IOException {
         this.stakes = new ArrayList<>();
         loadStakes(filePath);
+    }
+
+    public List<String> getStakes()
+    {
+        return stakes;
     }
 
     private void loadStakes(String filePath) throws IOException {
@@ -27,6 +33,10 @@ public class Stake {
     public String getRandomStake() {
         Random random = new Random();
         return stakes.get(random.nextInt(stakes.size()));
+    }
+
+    public void resetcurrentStake() {
+        this.currentStake = null;  // Or any default value
     }
 
     public void reset() {
@@ -59,6 +69,15 @@ public class Stake {
                     return 0;
                 }
         } 
+    }
+
+
+    public void setCurrentStake(String currentStake) { //<---------added
+        this.currentStake = currentStake;
+    }
+
+    public String getCurrentStake() { //<---------added
+        return currentStake;
     }
 }
 

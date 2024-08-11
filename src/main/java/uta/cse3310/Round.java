@@ -178,6 +178,10 @@ public class Round {
         this.isRoundActive = true;
     }
 
+    public void endRound() {
+        isRoundActive = false;
+    }
+
     public boolean isRoundActive() {
         return isRoundActive;
     }

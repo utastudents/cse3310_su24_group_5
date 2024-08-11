@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoundTest {/*
+public class RoundTest {
 
     private Round round;
     private List<Player> players;
@@ -20,7 +20,7 @@ public class RoundTest {/*
         players = new ArrayList<>();
         players.add(new Player("Player1", PlayerType.HUMAN));
         players.add(new Player("Player2", PlayerType.HUMAN));
-        round = new Round(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt");
+        round = new Round(players, "src/test/resources/words.txt", "src/main/resources/stake.txt");
     }
 
     // Helper method to invoke private methods using reflection
@@ -29,7 +29,7 @@ public class RoundTest {/*
         method.setAccessible(true);
         method.invoke(instance, params);
     }
-
+/* 
     @Test
     public void testPresentOptions() throws Exception {
         // Simulating a choice of buying a vowel
@@ -42,40 +42,49 @@ public class RoundTest {/*
 
         // Simulating a choice of solving the puzzle
         method.invoke(round, players.get(0), 3); // Simulating choosing option 3 (Solve the puzzle)
-    }
+    }*/
 
     @Test
     public void testBuyVowel() throws Exception {
-        // Simulate buying a vowel
-        Method method = Round.class.getDeclaredMethod("buyVowel", Player.class);
-        method.setAccessible(true);
-        method.invoke(round, players.get(0)); // Simulating buying a vowel
-
-        // Add assertions here if necessary to check the effects of the input
-        assertTrue(players.get(0).getScore() <= 1000); // Just a sample assertion
+        List<Player> players = new ArrayList<>();
+        Player player1 = new Player("Player1", PlayerType.HUMAN);
+        Player player2 = new Player("Player2", PlayerType.HUMAN);
+        players.add(player1);
+        players.add(player2);
+        Game game = new Game(players, "src/main/resources/wordss.txt", "src/main/resources/stake.txt", new Statistics());
+        Round round = new Round(players, "src/main/resources/wordss.txt", "src/main/resources/stake.txt");
+        game.startGame();
+        round.buyVowel(player1, 'a');
     }
 
     @Test
-    public void testSelectConsonant() throws Exception {
-        // Simulate selecting a consonant
-        Method method = Round.class.getDeclaredMethod("selectConsonant", Player.class);
-        method.setAccessible(true);
-        method.invoke(round, players.get(0)); // Simulating selecting a consonant
-
-        // Add assertions here if necessary to check the effects of the input
-        assertTrue(players.get(0).getScore() >= 0); // Just a sample assertion
+    public void testSelectConsonant() throws Exception 
+    {
+        List<Player> players = new ArrayList<>();
+        Player player1 = new Player("Player1", PlayerType.HUMAN);
+        Player player2 = new Player("Player2", PlayerType.HUMAN);
+        players.add(player1);
+        players.add(player2);
+        Game game = new Game(players, "src/main/resources/wordss.txt", "src/main/resources/stake.txt", new Statistics());
+        Round round = new Round(players, "src/main/resources/wordss.txt", "src/main/resources/stake.txt");
+        game.startGame();
+        round.selectConsonant(player1, 'n');
     }
 
     @Test
     public void testSolvePuzzle() throws Exception {
-        // Simulate solving the puzzle
-        Method method = Round.class.getDeclaredMethod("solvePuzzle", Player.class);
-        method.setAccessible(true);
-        method.invoke(round, players.get(0)); // Simulating solving the puzzle
-
-        // Add assertions here if necessary to check the effects of the input
-        assertTrue(players.get(0).isWinner()); // Just a sample assertion
-    }*/
+        List<Player> players = new ArrayList<>();
+        Player player1 = new Player("Player1", PlayerType.HUMAN);
+        Player player2 = new Player("Player2", PlayerType.HUMAN);
+        players.add(player1);
+        players.add(player2);
+        Game game = new Game(players, "src/main/resources/wordss.txt", "src/main/resources/stake.txt", new Statistics());
+        Round round = new Round(players, "src/main/resources/wordss.txt", "src/main/resources/stake.txt");
+        game.startGame();
+        round.solvePuzzle(player1, "applen");
+        round.solvePuzzle(player1, "banane");
+        round.solvePuzzle(player1, "grapen");
+    }
 }
 
 

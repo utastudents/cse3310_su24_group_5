@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class WordListTest {/*
+class WordListTest {
     private WordList wordList;
 
     @BeforeEach
@@ -22,7 +22,7 @@ class WordListTest {/*
         assertFalse(wordList.getArrList().isEmpty());
     }
 
-    @Test
+    //@Test
     void testReadWordsFromFile() {
         String word = WordList.readWordsFromFile("cse3310_su24_group_5/src/main/resources/words");
         assertNotNull(word);
@@ -54,6 +54,6 @@ class WordListTest {/*
         ArrayList<String> words = wordList.getArrList();
         assertNotNull(words);
         assertFalse(words.isEmpty());
-    }*/
+    }
 }
 

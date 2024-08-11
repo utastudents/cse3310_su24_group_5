@@ -185,6 +185,11 @@ public class Game {
         stats.updateWinner(player);
     }
 
+    public void endGame() {
+        stats.incrementGamesPlayed();
+        //stats.updateWinner(player);
+    }
+
     public Statistics getStatistics() {
         return stats;
     }

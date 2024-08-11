@@ -12,12 +12,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameTest {/*
+public class GameTest {
+    
+
+    //private
     @Test
     public void testAddPlayer() throws IOException {
         List<Player> players = new ArrayList<>();
-        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
-
+        Game game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stake.txt", new Statistics());
+                                                   //"src/test/resources/words.txt", "src/main/resources/stake.txt"
         Player player = new Player("Player1", PlayerType.HUMAN);
         assertTrue(game.addPlayer(player));
         assertEquals(1, game.getPlayers().size());
@@ -26,7 +29,7 @@ public class GameTest {/*
     @Test
     public void testStartGame() throws IOException {
         List<Player> players = new ArrayList<>();
-        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
+        Game game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stake.txt", new Statistics());
 
         game.addPlayer(new Player("Player1", PlayerType.HUMAN));
         game.addPlayer(new Player("Player2", PlayerType.HUMAN));
@@ -37,20 +40,20 @@ public class GameTest {/*
     @Test
     public void testPlayRound() throws IOException {
         List<Player> players = new ArrayList<>();
-        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
+        Player player1 = new Player("Player1", PlayerType.HUMAN);
+        Player player2 = new Player("Player2", PlayerType.HUMAN);
+        players.add(player1);
+        players.add(player2);
+        Round round = new Round(players, "src/main/resources/words.txt", "src/main/resources/stake.txt");
+        round.startRound();
+        assertTrue(round.isRoundActive());
 
-        game.addPlayer(new Player("Player1", PlayerType.HUMAN));
-        game.addPlayer(new Player("Player2", PlayerType.HUMAN));
-        game.startGame();
-        game.playRound();
-        assertTrue(game.isGameActive());
     }
 
     @Test
     public void testDetermineWinner() throws IOException {
         List<Player> players = new ArrayList<>();
-        Game game = new Game(players, "src/test/resources/test_words.txt", "src/test/resources/test_stakes.txt", new Statistics());
-
+        Game game = new Game(players, "src/main/resources/words.txt", "src/main/resources/stake.txt", new Statistics());
         Player player1 = new Player("Player1", PlayerType.HUMAN);
         Player player2 = new Player("Player2", PlayerType.HUMAN);
         player1.addScore(100);
@@ -60,7 +63,7 @@ public class GameTest {/*
 
         game.determineWinner();
         assertEquals(player1.getName(), game.getStatistics().getWinner().getName());
-    }*/
+    } 
 }
 
 

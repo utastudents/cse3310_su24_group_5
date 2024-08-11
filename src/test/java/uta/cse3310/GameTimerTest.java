@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GameTimerTest {/*
+class GameTimerTest {
 
     private GameTimer gameTimer;
 
     @BeforeEach
     void setUp() {
-        gameTimer = new GameTimer();
+        gameTimer = new GameTimer(20);
     }
 
     @Test
@@ -46,7 +46,7 @@ class GameTimerTest {/*
         gameTimer.reset();
         assertFalse(gameTimer.isRunning());
         assertEquals(0, gameTimer.getElapsedTime());
-    }*/
+    }
 }
 
 

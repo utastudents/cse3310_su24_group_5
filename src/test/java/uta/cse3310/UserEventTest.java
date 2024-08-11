@@ -3,21 +3,22 @@ package uta.cse3310;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserEventTest {/*
+class UserEventTest {
 
     @Test
     void testUserEvent() {
-        UserEvent event = new UserEvent(PlayerType.HUMAN, 1, "PLAY", "someValue");
+        UserEvent event = new UserEvent("Play", "27", "45");
 
-        assertEquals(PlayerType.HUMAN, event.getPlayerType());
-        assertEquals(1, event.getId());
-        assertEquals("PLAY", event.getAction());
-        assertEquals("someValue", event.getValue());
+        //assertEquals(PlayerType.HUMAN, event.getPlayerType());
+        assertEquals("Play", event.getAction());
+        assertEquals("27", event.getValue());
+        assertEquals("45", event.getPlayerId());
 
         event.setPlayerId("player123");
         assertEquals("player123", event.getPlayerId());
-    }*/
+    }
 }
+
 
 
 
