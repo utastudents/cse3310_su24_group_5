@@ -123,6 +123,12 @@ public class App extends WebSocketServer {
                 activeGames.remove(game);
             }
         }
+
+        // Reset the connectionId if no active games are left
+        if (activeGames.isEmpty()) {
+            connectionId = 0;
+            System.out.println("No active games left. Resetting connectionId to 0.");
+        }
     }
 
     @Override
