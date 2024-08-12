@@ -181,13 +181,9 @@ public class Game {
     }
 
     public void endGame(Player player) {
+        this.isGameActive = false;
         stats.incrementGamesPlayed();
         stats.updateWinner(player);
-    }
-
-    public void endGame() {
-        stats.incrementGamesPlayed();
-        //stats.updateWinner(player);
     }
 
     public Statistics getStatistics() {
