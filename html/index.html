@@ -270,8 +270,13 @@
                 stakeDisplay.textContent = 'Stake: ' + (currentRound.currentStake);
                 statusDisplay.textContent = 'Status: ' + (gameState.isGameActive ? 'Closed' : 'Open');
                 roundDisplay.textContent = 'Round: ' + (gameState.currentRoundIndex + 1) + '/' + gameState.rounds.length;
-                winnerDisplay.textContent = 'Winner: ' + (gameState.winner ? gameState.winner.name : 'No winner yet');
                 currentPlayerDisplay.textContent = 'Current Player: ' + (gameState.players.find(p => p.name === currentPlayer.name).name);
+
+                if (!gameState.isGameActive && gameState.stats.winner) {
+                    winnerDisplay.textContent = 'Winner: ' + gameState.stats.winner.name;
+                } else {
+                    winnerDisplay.textContent = 'Winner: ';
+                }
 
                 scoreTable.innerHTML = '';
                 gameState.players.forEach(player => {
