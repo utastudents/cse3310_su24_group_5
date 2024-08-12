@@ -157,6 +157,7 @@ public class App extends WebSocketServer {
             // After processing the input, determine if the turn should continue or advance
             if (!game.getCurrentRound().isRoundActive()) {
                 game.moveToNextRoundOrEndGame();
+                broadcastToGame(game, new Gson().toJson(game));
             } else if (!game.correctGuess) {
                 // Advance to the next turn
                 game.getCurrentRound().advanceTurn();
