@@ -175,7 +175,8 @@
         const startGameButton = document.getElementById('startGameButton'); // Start button reference
 
         function connectWebSocket() {
-            socket = new WebSocket('ws://localhost:9105');
+            url = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
+            socket = new WebSocket(url);
             socket.onopen = function () {
                 console.log('WebSocket connection established');
             };
